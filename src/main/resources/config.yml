@@ -1,0 +1,15 @@
+mongo:
+  uri: "mongodb://localhost"
+  database: "CrownedHub"
+
+server-name: "lobby-1"
+spawn-location: ""
+
+welcome-message:
+  - "&7&m----------------------------------------"
+  - "&fBienvenido &e%player% &fa &6&lCrowned Network"
+  - ""
+  - " &a&l┃ Tienda &fstore.crowned.gg"
+  - " &9&l┃ Discord &fdiscord.crowned.gg"
+  - " &b&l┃ Twitter &f@CrownedNetwork"
+  - "&7&m----------------------------------------"

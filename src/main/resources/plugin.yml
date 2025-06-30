@@ -1,0 +1,6 @@
+name: '${project.artifactId}'
+version: '${project.version}'
+main: studio.overmine.overhub.OverHub
+api-version: '1.13'
+author: "OverMine Studios"
+

@@ -1,0 +1,29 @@
+scoreboard:
+  enabled: true
+  lines:
+    - "&7&m-----------------------------"
+    - ""
+    - "&6Online:"
+    - "&f%bungee_total%"
+    - ""
+    - "&6Rank:"
+    - "&f%luckperms_primary_group_name%"
+    - ""
+    - "<scoreboard-footer>"
+    - "&7&m-----------------------------"
+
+title-animation:
+  enabled: true
+  interval: 200 # 0.2 seconds
+  lines:
+    - "&6&lCrowned Network"
+    - "&e&lCrowned Network"
+    - "&f&lCrowned Network"
+
+footer-animation:
+  enabled: true
+  interval: 3000 # 3 seconds
+  lines:
+    - "&7crowned.gg"
+    - "&astore.crowned.gg"
+    - "&9discord.crowned.gg"

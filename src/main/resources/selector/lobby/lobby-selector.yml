@@ -1,0 +1,21 @@
+menu:
+  decorations:
+    9-17;18;26;27-35:
+      head: ""
+      name: "&7 "
+      description: {}
+      material: "STAINED_GLASS_PANE"
+      data: 7
+      enchanted: false
+lobbies:
+  lobby-1:
+    item:
+      head: ""
+      name: "&6&lLobby #1"
+      description:
+        - "&7This is the lobby-1."
+      material: "NETHER_STAR"
+      data: 0
+      slot: 22
+      enchanted: true
+    lobby: "lobby-1"

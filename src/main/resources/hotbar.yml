@@ -1,0 +1,56 @@
+server-selector:
+  item:
+    head: ""
+    name: "&6&lSERVER SELECTOR"
+    description: []
+    material: "COMPASS"
+    data: 0
+    slot: 0
+ender-butt:
+  item:
+    head: ""
+    name: "&6&lENDER BUTT"
+    description: []
+    material: "ENDER_PEARL"
+    data: 0
+    slot: 8
+visibility-all:
+  item:
+    head: ""
+    name: "&6&lVISIBILITY &8┃ &a&lALL"
+    description: []
+    material: "INK_SACK"
+    data: 10
+    slot: 7
+visibility-donator:
+  item:
+    head: ""
+    name: "&6&lVISIBILITY &8┃ &e&lDONATOR"
+    description: []
+    material: "INK_SACK"
+    data: 11
+    slot: 7
+visibility-staff:
+  item:
+    head: ""
+    name: "&6&lVISIBILITY &8┃ &b&lSTAFF"
+    description: []
+    material: "INK_SACK"
+    data: 12
+    slot: 7
+visibility-friend:
+  item:
+    head: ""
+    name: "&6&lVISIBILITY &8┃ &d&lFRIEND"
+    description: []
+    material: "INK_SACK"
+    data: 9
+    slot: 7
+visibility-none:
+  item:
+    head: ""
+    name: "&6&lVISIBILITY &8┃ &7&lNONE"
+    description: []
+    material: "INK_SACK"
+    data: 8
+    slot: 7

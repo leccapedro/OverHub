@@ -1,0 +1,24 @@
+menu:
+  title: "%server% Server Selector"
+  rows: 3
+  decorations:
+    0-8;9;17;18-26:
+      head: ""
+      name: "&7 "
+      description: {}
+      material: "STAINED_GLASS_PANE"
+      data: 7
+      enchanted: false
+sub-servers:
+  default-1:
+    item:
+      head: ""
+      name: "&6&lDefault Sub Server 1"
+      description:
+        - "&7This is the default server."
+      material: "DIAMOND_SWORD"
+      data: 0
+      slot: 13
+      enchanted: true
+    sub-server: "default-1"
+    commands: {}
