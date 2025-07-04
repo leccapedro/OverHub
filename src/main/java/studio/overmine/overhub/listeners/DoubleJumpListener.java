@@ -3,7 +3,6 @@ package studio.overmine.overhub.listeners;
 import com.cryptomorin.xseries.XSound;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

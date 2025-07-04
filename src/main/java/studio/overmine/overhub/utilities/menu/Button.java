@@ -18,7 +18,6 @@ public abstract class Button {
         });
     }
 
-
     public void playNeutral(Player player) {
         XSound.ENTITY_EXPERIENCE_ORB_PICKUP.play(player);
     }

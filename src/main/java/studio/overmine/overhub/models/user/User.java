@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.Setter;
+import studio.overmine.overhub.OverHub;
+import studio.overmine.overhub.utilities.FileConfig;
 
 @Getter @Setter
 public class User {
@@ -14,11 +16,13 @@ public class User {
     private UUID uuid;
     private String name;
     private VisibilityType visibilityType;
+    private FileConfig dataFile;
 
-    public User(UUID uuid, String name) {
+    public User(OverHub plugin, UUID uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.visibilityType = VisibilityType.ALL;
+        this.dataFile = new FileConfig(plugin, "data/user-data/" + uuid.toString() + ".yml");
     }
     
     public void executeCurrentVisibility() {
@@ -48,7 +52,7 @@ public class User {
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (player.equals(onlinePlayer)) return;
 
-            if (onlinePlayer.hasPermission("crowned.donator")) {
+            if (onlinePlayer.hasPermission("overhub.donator")) {
                 player.showPlayer(onlinePlayer);
             }
             else {
@@ -62,7 +66,7 @@ public class User {
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (player.equals(onlinePlayer)) return;
 
-            if (onlinePlayer.hasPermission("crowned.staff")) {
+            if (onlinePlayer.hasPermission("overhub.staff")) {
                 player.showPlayer(onlinePlayer);
             }
             else {

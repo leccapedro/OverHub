@@ -33,6 +33,7 @@ public class ServerSelectorController {
         this.serverSelectors.clear();
 
         ConfigurationSection serversSection = serverSelectorFile.getConfiguration().getConfigurationSection("servers");
+        if (serversSection == null) throw new NullPointerException("Servers section in server-selector.yml is null");
 
         for (String serverName : serversSection.getKeys(false)) {
             ConfigurationSection serverSection = serversSection.getConfigurationSection(serverName);

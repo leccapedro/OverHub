@@ -42,6 +42,8 @@ public abstract class Menu {
     public void open() {
         this.buttons = this.getButtons(player);
 
+        inventory.clear();
+
         for (Map.Entry<Integer, Button> entry : buttons.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getItemStack(player));
         }
@@ -62,8 +64,6 @@ public abstract class Menu {
         }
 
         player.openInventory(inventory);
-        player.updateInventory();
-
         menus.put(player.getUniqueId(), this);
     }
 

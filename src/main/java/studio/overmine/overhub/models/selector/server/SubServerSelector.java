@@ -1,6 +1,6 @@
 package studio.overmine.overhub.models.selector.server;
 
-import studio.overmine.overhub.utilities.ItemBuilder;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,8 +23,7 @@ public class SubServerSelector {
         this.server = server;
         this.icon = new ItemBuilder(section.getString("item.material"))
                 .setDisplayName(section.getString("item.name"))
-                .setLore(section.getStringList("item.description"))
-                .setData(section.getInt("item.data"))
+                .setLore(section.getStringList("item.lore"))
                 .setSkullOwner(section.getString("item.head"))
                 .setEnchanted(section.getBoolean("item.enchanted"))
                 .build();

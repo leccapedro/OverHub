@@ -9,7 +9,7 @@ import org.bukkit.World;
 public class SerializeUtil {
 
     public String serializeLocation(Location location) {
-        if (location == null) return null;
+        if (location == null || location.getWorld() == null) return null;
         return location.getWorld().getName() + ", " +
                 location.getX() + ", " +
                 location.getY() + ", " +

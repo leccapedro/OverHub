@@ -22,8 +22,9 @@ public class SelectorResource extends Resource {
 
     @Override
     public void initialize() {
-        FileConfig serverSelectorFile = plugin.getFileConfig("server-selector"),
-                lobbySelectorFile = plugin.getFileConfig("lobby-selector");
+        FileConfig serverSelectorFile = plugin.getFileConfig("server-selector");
+        FileConfig lobbySelectorFile = plugin.getFileConfig("lobby-selector");
+
         SERVER_SELECTOR_MENU_TITLE = serverSelectorFile.getString("menu.title", "Server Selector");
         SERVER_SELECTOR_MENU_ROWS = serverSelectorFile.getInt("menu.rows", 3);
 

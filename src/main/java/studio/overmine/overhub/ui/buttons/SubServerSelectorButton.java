@@ -3,7 +3,7 @@ package studio.overmine.overhub.ui.buttons;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.selector.server.SubServerSelector;
 import studio.overmine.overhub.utilities.ChatUtil;
-import studio.overmine.overhub.utilities.ItemBuilder;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 import studio.overmine.overhub.utilities.ProxyUtil;
 import studio.overmine.overhub.utilities.menu.Button;
 import lombok.AllArgsConstructor;

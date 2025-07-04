@@ -1,5 +1,6 @@
 package studio.overmine.overhub.listeners;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.LobbySelectorController;
@@ -10,7 +11,6 @@ import studio.overmine.overhub.utilities.ProxyUtil;
 import studio.overmine.overhub.utilities.menu.Menu;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,7 +50,7 @@ public class LobbySelectorListener implements Listener {
         String lobby = lobbySelector.getLobby();
 
         if (lobby.equals(ConfigResource.SERVER_NAME)) {
-            XSound.BLOCK_ANVIL_USE.play(player);
+            XSound.BLOCK_NOTE_BLOCK_BASS.play(player, 0.5f, 10.0f);
             ChatUtil.sendMessage(player, "&cYa estás en este lobby.");
             return;
         }

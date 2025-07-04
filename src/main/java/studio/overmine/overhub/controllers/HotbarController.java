@@ -18,7 +18,7 @@ import studio.overmine.overhub.models.hotbar.Hotbar;
 import studio.overmine.overhub.models.hotbar.types.EnderButtHotbar;
 import studio.overmine.overhub.models.hotbar.types.ServerSelectorHotbar;
 import studio.overmine.overhub.utilities.FileConfig;
-import studio.overmine.overhub.utilities.ItemBuilder;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 
 public class HotbarController {
 
@@ -64,10 +64,10 @@ public class HotbarController {
     public Hotbar registerHotbar(Hotbar hotbar, ConfigurationSection section) {
         String hotbarName = hotbar.getName();
 
+        hotbar.setEnabled(section.getBoolean(hotbarName + ".enabled"));
         hotbar.setItemStack(new ItemBuilder(section.getString(hotbarName + ".item.material"))
                 .setDisplayName(section.getString(hotbarName + ".item.name"))
-                .setLore(section.getStringList(hotbarName + ".item.description"))
-                .setData(section.getInt(hotbarName + ".item.data"))
+                .setLore(section.getStringList(hotbarName + ".item.lore"))
                 .setSkullOwner(section.getString(hotbarName + ".item.head"))
                 .build());
         hotbar.setItemSlot(section.getInt(hotbarName + ".item.slot"));
@@ -76,6 +76,7 @@ public class HotbarController {
 
     public void registerHotbars(Hotbar... hotbars) {
         for (Hotbar hotbar : hotbars) {
+            if (!hotbar.isEnabled()) continue;
             hotbarMap.put(hotbar.getName(), hotbar);
         }
     }

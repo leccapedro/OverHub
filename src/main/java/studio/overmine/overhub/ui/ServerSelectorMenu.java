@@ -14,6 +14,7 @@ import studio.overmine.overhub.ui.buttons.ServerSelectorButton;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.menu.Button;
 import studio.overmine.overhub.utilities.menu.Menu;
+import studio.overmine.overhub.utilities.menu.decoration.DecorationButton;
 
 public class ServerSelectorMenu extends Menu {
 
@@ -34,7 +35,7 @@ public class ServerSelectorMenu extends Menu {
         HashMap<Integer, Button> buttonMap = new HashMap<>();
 
         for (Decoration decoration : SelectorResource.SERVER_SELECTOR_MENU_DECORATIONS) {
-            buttonMap.put(decoration.getSlot(), Button.getButton(decoration.getItemStack(player)));
+            buttonMap.put(decoration.getSlot(), new DecorationButton(decoration));
         }
 
         for (ServerSelector serverSelector : serverSelectorController.getServerSelectors()) {

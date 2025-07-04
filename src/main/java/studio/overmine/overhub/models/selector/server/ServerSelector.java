@@ -2,7 +2,7 @@ package studio.overmine.overhub.models.selector.server;
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.utilities.FileConfig;
-import studio.overmine.overhub.utilities.ItemBuilder;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 import studio.overmine.overhub.utilities.menu.decoration.Decoration;
 import studio.overmine.overhub.utilities.menu.decoration.DecorationUtil;
 import lombok.Getter;
@@ -33,8 +33,7 @@ public class ServerSelector {
         this.name = name;
         this.icon = new ItemBuilder(section.getString("item.material"))
                 .setDisplayName(section.getString("item.name"))
-                .setLore(section.getStringList("item.description"))
-                .setData(section.getInt("item.data"))
+                .setLore(section.getStringList("item.lore"))
                 .setSkullOwner(section.getString("item.head"))
                 .setEnchanted(section.getBoolean("item.enchanted"))
                 .build();

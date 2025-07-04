@@ -16,14 +16,14 @@ title-animation:
   enabled: true
   interval: 200 # 0.2 seconds
   lines:
-    - "&6&lCrowned Network"
-    - "&e&lCrowned Network"
-    - "&f&lCrowned Network"
+    - "&6&lServer Network"
+    - "&e&lServer Network"
+    - "&f&lServer Network"
 
 footer-animation:
   enabled: true
   interval: 3000 # 3 seconds
   lines:
-    - "&7crowned.gg"
-    - "&astore.crowned.gg"
-    - "&9discord.crowned.gg"
+    - "&7server.net"
+    - "&astore.server.net"
+    - "&9discord.server.net"

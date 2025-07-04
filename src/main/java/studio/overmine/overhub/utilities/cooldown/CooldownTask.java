@@ -1,16 +1,15 @@
 package studio.overmine.overhub.utilities.cooldown;
 
 import com.google.common.collect.Table;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 import java.util.UUID;
 
-public class CooldownTask implements Runnable {
+public class CooldownTask extends BukkitRunnable {
 
     private final JavaPlugin plugin;
-    private int id = -1;
 
     public CooldownTask(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -27,13 +26,10 @@ public class CooldownTask implements Runnable {
 
         while (iterator.hasNext()) {
             Table.Cell<UUID, String, Long> table = iterator.next();
-            UUID uuid = table.getRowKey();
-            String name = table.getColumnKey();
-            long remainingTime = table.getValue();
 
-            if (remainingTime <= 0) {
+            if (table.getValue() <= 0) {
                 iterator.remove();
-                CooldownUtil.removeCooldown(uuid, name);
+                CooldownUtil.removeCooldown(table.getRowKey(), table.getColumnKey());
             }
         }
 
@@ -43,19 +39,6 @@ public class CooldownTask implements Runnable {
     }
 
     public void start() {
-        if (!isRunning()) {
-            this.id = Bukkit.getScheduler().runTaskTimer(plugin, this, 0L, 20L).getTaskId();
-        }
-    }
-
-    public void cancel() {
-        if (isRunning()) {
-            Bukkit.getScheduler().cancelTask(id);
-            id = -1;
-        }
-    }
-
-    public boolean isRunning() {
-        return id != -1 && Bukkit.getScheduler().isCurrentlyRunning(id);
+        this.runTaskTimer(plugin, 0L, 20L);
     }
 }

@@ -15,7 +15,7 @@ public class OverHubCommand extends BaseCommand {
         this.plugin = plugin;
     }
 
-    @Command(name = "overhub", aliases = {"ch"}, permission = "overhub.command.overhub", inGameOnly = false)
+    @Command(name = "overhub", permission = "overhub.command.overhub", inGameOnly = false)
     public void onCommand(CommandArgs command) {
         CommandSender sender = command.getSender();
         String[] args = command.getArgs();

@@ -13,6 +13,7 @@ import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.menu.Button;
 import studio.overmine.overhub.utilities.menu.Menu;
 import studio.overmine.overhub.utilities.menu.decoration.Decoration;
+import studio.overmine.overhub.utilities.menu.decoration.DecorationButton;
 
 public class SubServerSelectorMenu extends Menu {
 
@@ -34,7 +35,7 @@ public class SubServerSelectorMenu extends Menu {
         HashMap<Integer, Button> buttonMap = new HashMap<>();
 
         for (Decoration decoration : serverSelector.getMenuDecorations()) {
-            buttonMap.put(decoration.getSlot(), Button.getButton(decoration.getItemStack(player)));
+            buttonMap.put(decoration.getSlot(), new DecorationButton(decoration));
         }
 
         for (SubServerSelector subServerSelector : serverSelector.getSubServerSelectors()) {

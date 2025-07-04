@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import studio.overmine.overhub.commands.OverHubCommand;
 import studio.overmine.overhub.commands.SetSpawnCommand;
 import studio.overmine.overhub.commands.SpawnCommand;
-import studio.overmine.overhub.integrations.PlaceholderAPIHook;
 import studio.overmine.overhub.utilities.FileConfig;
 import lombok.Getter;
 
@@ -22,7 +21,6 @@ public class OverHub extends JavaPlugin {
 
     private Map<String, FileConfig> fileConfigs;
     private ResourceController resourceController;
-    private MongoController mongoController;
     private UserController userController;
     private SpawnController spawnController;
     private HotbarController hotbarController;
@@ -31,22 +29,17 @@ public class OverHub extends JavaPlugin {
     private FastBoardController fastBoardController;
 
     @Override
-    public void onLoad() {
-
-    }
-
-    @Override
     public void onEnable() {
         this.fileConfigs = new HashMap<>();
         this.fileConfigs.put("config", new FileConfig(this, "config.yml"));
+        this.fileConfigs.put("language", new FileConfig(this, "language.yml"));
         this.fileConfigs.put("hotbar", new FileConfig(this, "hotbar.yml"));
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
 
         this.resourceController = new ResourceController(this);
-        this.mongoController = new MongoController(this);
-        this.userController = new UserController(this, this.mongoController);
+        this.userController = new UserController(this);
         this.spawnController = new SpawnController(this);
         this.hotbarController = new HotbarController(this);
         this.serverSelectorController = new ServerSelectorController(this);
@@ -56,8 +49,6 @@ public class OverHub extends JavaPlugin {
             this.fastBoardController = new FastBoardController(this);
             this.fastBoardController.setAdapter(new FastBoardProvider(fastBoardController));
         }
-
-        PlaceholderAPIHook.initialize();
 
         CommandController commandController = new CommandController(this);
         commandController.registerCommands(new OverHubCommand(this));
@@ -81,7 +72,6 @@ public class OverHub extends JavaPlugin {
     @Override
     public void onDisable() {
         if (this.fastBoardController != null) this.fastBoardController.onDisable();
-        this.mongoController.onDisable();
     }
 
     public void onReload() {

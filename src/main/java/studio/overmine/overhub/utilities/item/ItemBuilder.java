@@ -1,10 +1,12 @@
-package studio.overmine.overhub.utilities;
+package studio.overmine.overhub.utilities.item;
 
-import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -16,8 +18,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
+import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ItemBuilder {
 
@@ -38,17 +41,18 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(String material) {
-        Material materialType = Material.matchMaterial(material);
+        XMaterial xmaterial = XMaterial.matchXMaterial(material)
+                .orElse(null);
 
-        if (materialType == null) {
-            this.itemStack = new ItemStack(Material.STONE);
+        if (xmaterial == null) {
+            this.itemStack = new ItemStack(Material.BARRIER);
             this.itemMeta = itemStack.getItemMeta();
 
             Bukkit.getLogger().severe("ERROR - INVALID MATERIAL: " + material);
             return;
         }
 
-        this.itemStack = new ItemStack(materialType);
+        this.itemStack = new ItemStack(xmaterial.get(), 1, xmaterial.getData());
         this.itemMeta = itemStack.getItemMeta();
     }
 
@@ -92,17 +96,18 @@ public class ItemBuilder {
         SkullMeta meta = (SkullMeta) this.itemMeta;
 
         if (isBase64(texture)) {
-            GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-            profile.getProperties().put("textures", new Property("textures", texture));
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            PlayerTextures textures = profile.getTextures();
 
             try {
-                Field profileField = meta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-                profileField.set(meta, profile);
+                textures.setSkin(new URL(texture));
             }
-            catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-                throw new RuntimeException("Error setting skull skin - ", e);
+            catch (MalformedURLException e) {
+                throw new IllegalArgumentException("Invalid URL for skin texture: " + texture, e);
             }
+
+            profile.setTextures(textures);
+            meta.setOwnerProfile(profile);
         }
         else {
             String owner = player != null ? ChatUtil.placeholder(player, texture) : texture;

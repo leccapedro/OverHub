@@ -1,56 +1,56 @@
 server-selector:
+  enabled: true
   item:
     head: ""
     name: "&6&lSERVER SELECTOR"
-    description: []
+    lore: {}
     material: "COMPASS"
-    data: 0
     slot: 0
 ender-butt:
+  enabled: true
   item:
     head: ""
     name: "&6&lENDER BUTT"
-    description: []
+    lore: {}
     material: "ENDER_PEARL"
-    data: 0
     slot: 8
 visibility-all:
+  enabled: true
   item:
     head: ""
     name: "&6&lVISIBILITY &8┃ &a&lALL"
-    description: []
-    material: "INK_SACK"
-    data: 10
+    lore: {}
+    material: "LIME_DYE"
     slot: 7
 visibility-donator:
+  enabled: true
   item:
     head: ""
     name: "&6&lVISIBILITY &8┃ &e&lDONATOR"
-    description: []
-    material: "INK_SACK"
-    data: 11
+    lore: {}
+    material: "YELLOW_DYE"
     slot: 7
 visibility-staff:
+  enabled: true
   item:
     head: ""
     name: "&6&lVISIBILITY &8┃ &b&lSTAFF"
-    description: []
-    material: "INK_SACK"
-    data: 12
+    lore: {}
+    material: "CYAN_DYE"
     slot: 7
 visibility-friend:
+  enabled: true
   item:
     head: ""
     name: "&6&lVISIBILITY &8┃ &d&lFRIEND"
-    description: []
-    material: "INK_SACK"
-    data: 9
+    lore: {}
+    material: "PINK_DYE"
     slot: 7
 visibility-none:
+  enabled: true
   item:
     head: ""
     name: "&6&lVISIBILITY &8┃ &7&lNONE"
-    description: []
-    material: "INK_SACK"
-    data: 8
+    lore: {}
+    material: "GRAY_DYE"
     slot: 7

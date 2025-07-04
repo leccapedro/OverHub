@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class Hotbar {
 
     protected final String name;
+    protected boolean enabled;
     protected ItemStack itemStack;
     protected int itemSlot;
     protected boolean unique;
@@ -22,6 +23,7 @@ public abstract class Hotbar {
     public boolean isSimilar(ItemStack toCheck) {
         return (toCheck != null)
                 && (toCheck.getType() != Material.AIR)
+                && (toCheck.getType() == itemStack.getType())
                 && (toCheck.hasItemMeta())
                 && (toCheck.getItemMeta().getDisplayName() != null)
                 && toCheck.getItemMeta().getDisplayName().equals(itemStack.getItemMeta().getDisplayName());

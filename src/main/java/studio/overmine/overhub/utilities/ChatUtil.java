@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import studio.overmine.overhub.integrations.PlaceholderAPIHook;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @UtilityClass
@@ -40,11 +39,11 @@ public class ChatUtil {
     }
 
     public String placeholder(Player player, String text) {
-        return translate(PlaceholderAPIHook.enabled ? PlaceholderAPI.setPlaceholders(player, text) : text);
+        return PlaceholderAPI.setPlaceholders(player, translate(text));
     }
 
     public List<String> placeholder(Player player, List<String> text) {
-        return translate(PlaceholderAPIHook.enabled ? PlaceholderAPI.setPlaceholders(player, text) : text);
+        return PlaceholderAPI.setPlaceholders(player, translate(text));
     }
 
     public void sendPlaceholderMessage(Player player, String text) {

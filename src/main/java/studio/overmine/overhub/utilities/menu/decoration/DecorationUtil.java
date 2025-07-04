@@ -1,6 +1,6 @@
 package studio.overmine.overhub.utilities.menu.decoration;
 
-import studio.overmine.overhub.utilities.ItemBuilder;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 import lombok.experimental.UtilityClass;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -72,11 +72,11 @@ public class DecorationUtil {
         decoration.setSlot(slot);
         decoration.setItemStack(new ItemBuilder(Objects.requireNonNull(section.getString(key + ".material")))
                 .setSkullOwner(section.getString(key + ".head"))
-                .setData(section.getInt(key + ".data"))
                 .setDisplayName(section.getString(key + ".name"))
-                .setLore(section.getStringList(key + ".description"))
+                .setLore(section.getStringList(key + ".lore"))
                 .setEnchanted(section.getBoolean(key + ".enchanted"))
                 .build());
+        decoration.setCommands(section.getStringList(key + ".commands"));
 
         decorations.add(decoration);
     }

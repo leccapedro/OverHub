@@ -25,7 +25,6 @@ public class HotbarListener implements Listener {
 
     @EventHandler
     public void onHotbarInteract(PlayerInteractEvent event) {
-        if (event.getItem() == null) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) return;
 
         Hotbar hotbar = hotbarController.getHotbarByItem(event.getItem());
