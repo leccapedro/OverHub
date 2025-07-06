@@ -5,10 +5,7 @@ import java.util.Set;
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.Resource;
-import studio.overmine.overhub.models.resources.types.ConfigResource;
-import studio.overmine.overhub.models.resources.types.LanguageResource;
-import studio.overmine.overhub.models.resources.types.ScoreboardResource;
-import studio.overmine.overhub.models.resources.types.SelectorResource;
+import studio.overmine.overhub.models.resources.types.*;
 import lombok.Getter;
 
 @Getter
@@ -24,6 +21,7 @@ public class ResourceController {
         this.resources.add(new LanguageResource(plugin));
         this.resources.add(new SelectorResource(plugin));
         this.resources.add(new ScoreboardResource(plugin));
+        this.resources.add(new CombatSwordResource(plugin));
         this.onReload();
     }
 

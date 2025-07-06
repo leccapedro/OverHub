@@ -2,7 +2,6 @@ package studio.overmine.overhub.models.hotbar.types;
 
 import com.cryptomorin.xseries.XSound;
 import studio.overmine.overhub.models.hotbar.Hotbar;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public class EnderButtHotbar extends Hotbar {

@@ -1,5 +1,6 @@
 package studio.overmine.overhub.models.resources.types;
 
+import org.bukkit.configuration.ConfigurationSection;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.Resource;
 import studio.overmine.overhub.utilities.FileConfig;

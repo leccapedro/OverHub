@@ -28,6 +28,7 @@ public class OverHub extends JavaPlugin {
     private ServerSelectorController serverSelectorController;
     private LobbySelectorController lobbySelectorController;
     private FastBoardController fastBoardController;
+    private CombatController combatController;
 
     @Override
     public void onEnable() {
@@ -38,13 +39,16 @@ public class OverHub extends JavaPlugin {
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
+        this.fileConfigs.put("combat-sword-config", new FileConfig(this, "combat-sword-config.yml"));
 
         this.resourceController = new ResourceController(this);
         this.userController = new UserController(this);
         this.spawnController = new SpawnController(this);
+        this.combatController = new CombatController();
         this.hotbarController = new HotbarController(this);
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
+        this.fastBoardController = new FastBoardController(this);
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
@@ -60,7 +64,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new WorldListener(), this);
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
-        pluginManager.registerEvents(new CombatListener(), this);
+        pluginManager.registerEvents(new CombatListener(this), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");

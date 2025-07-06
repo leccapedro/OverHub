@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import studio.overmine.overhub.models.hotbar.types.VisibilityHotbar;
+import studio.overmine.overhub.models.resources.types.CombatSwordResource;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.models.user.VisibilityType;
 import org.bukkit.Bukkit;

@@ -1,3 +1,10 @@
 server-message:
   on-join: "&7[&a✔&7] &7%player%"
   on-quit: "&7[&c✘&7] &7%player%"
+
+combat-sword-message:
+  task-start: "&aEmpezando cuenta atrás de 5 segundos..."
+  countdown: "&eFaltan %countdown% segundos para equiparte."
+  task-cancel: "&cEquipamiento cancelado."
+  equip-success: "&a¡Equipado para el combate!"
+  pvp-disabled: "&cEl PvP está desactivado para uno de los jugadores."
