@@ -44,7 +44,7 @@ public class FastBoardController {
 
     public void setup() {
         if (thread != null) {
-            thread.stop();
+            thread.setRunning(false);
             thread = null;
         }
 
@@ -54,7 +54,7 @@ public class FastBoardController {
 
     public void onDisable() {
         if (thread != null) {
-            thread.stop();
+            thread.setRunning(false);
             thread = null;
         }
     }

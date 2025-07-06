@@ -17,6 +17,8 @@ public class ChatUtil {
 
     private final char COLOR_CHAR = ChatColor.COLOR_CHAR;
 
+    public String NORMAL_LINE = "&7&m----------------------------------------";
+
     public String translate(String text) {
         Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
         Matcher matcher = hexPattern.matcher(text);

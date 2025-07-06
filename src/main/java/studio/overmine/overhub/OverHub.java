@@ -2,6 +2,7 @@ package studio.overmine.overhub;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
@@ -10,9 +11,9 @@ import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import studio.overmine.overhub.commands.OverHubCommand;
-import studio.overmine.overhub.commands.SetSpawnCommand;
-import studio.overmine.overhub.commands.SpawnCommand;
+import studio.overmine.overhub.commands.main.OverHubCommand;
+import studio.overmine.overhub.commands.spawn.SetSpawnCommand;
+import studio.overmine.overhub.commands.spawn.SpawnCommand;
 import studio.overmine.overhub.utilities.FileConfig;
 import lombok.Getter;
 
@@ -50,11 +51,6 @@ public class OverHub extends JavaPlugin {
             this.fastBoardController.setAdapter(new FastBoardProvider(fastBoardController));
         }
 
-        CommandController commandController = new CommandController(this);
-        commandController.registerCommands(new OverHubCommand(this));
-        commandController.registerCommands(new SpawnCommand(this));
-        commandController.registerCommands(new SetSpawnCommand(this));
-
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(new UserListener(this), this);
         pluginManager.registerEvents(new MenuListener(), this);
@@ -67,6 +63,11 @@ public class OverHub extends JavaPlugin {
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        Objects.requireNonNull(this.getCommand("overhub")).setExecutor(new OverHubCommand(this));
+        Objects.requireNonNull(this.getCommand("overhub")).setTabCompleter(new OverHubCommand(this));
+        Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(spawnController));
+        Objects.requireNonNull(this.getCommand("setspawn")).setExecutor(new SetSpawnCommand(spawnController));
     }
 
     @Override

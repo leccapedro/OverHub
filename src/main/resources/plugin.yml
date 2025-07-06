@@ -4,4 +4,14 @@ main: studio.overmine.overhub.OverHub
 api-version: '1.13'
 author: "OverMine Studios"
 depend: [PlaceholderAPI]
+commands:
+  overhub:
+    permission: "overhub.command.overhub"
+    description: "OverHub command"
+    aliases: ["oh"]
+  spawn:
+    description: "Spawn command"
+  setspawn:
+    permission: "overhub.command.setspawn"
+    description: "Set spawn command"
 

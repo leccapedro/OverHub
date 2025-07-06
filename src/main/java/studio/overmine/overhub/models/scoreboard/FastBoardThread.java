@@ -1,5 +1,6 @@
 package studio.overmine.overhub.models.scoreboard;
 
+import lombok.Setter;
 import studio.overmine.overhub.controllers.FastBoardController;
 import studio.overmine.overhub.utilities.ChatUtil;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import java.util.List;
 public class FastBoardThread extends Thread {
 
     private final FastBoardController fastBoardController;
+    @Setter private boolean running = true;
 
     public FastBoardThread(FastBoardController fastBoardController) {
         this.fastBoardController = fastBoardController;
@@ -17,7 +19,7 @@ public class FastBoardThread extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             FastBoardAdapter adapter = fastBoardController.getAdapter();
 
             for (FastBoard board : fastBoardController.getBoards().values()) {
