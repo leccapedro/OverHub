@@ -60,6 +60,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new WorldListener(), this);
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
+        pluginManager.registerEvents(new CombatListener(), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
