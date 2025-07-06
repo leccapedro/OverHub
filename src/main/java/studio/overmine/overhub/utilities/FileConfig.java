@@ -2,14 +2,19 @@ package studio.overmine.overhub.utilities;
 
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import studio.overmine.overhub.utilities.item.ItemBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Getter
 public class FileConfig {
@@ -38,37 +43,67 @@ public class FileConfig {
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
     }
 
-    private <T> T getOrDefault(String path, T defaultValue) {
-        if (!configuration.contains(path)) {
-            configuration.set(path, defaultValue);
-            save();
+    public double getDouble(String path) {
+        if (configuration.contains(path)) {
+            return configuration.getDouble(path);
         }
-        return (T) configuration.get(path);
+        return 0;
     }
 
-    public double getDouble(String path, double defaultValue) {
-        return getOrDefault(path, defaultValue);
+    public int getInt(String path) {
+        if (configuration.contains(path)) {
+            return configuration.getInt(path);
+        }
+        return 0;
     }
 
-    public int getInt(String path, int defaultValue) {
-        return getOrDefault(path, defaultValue);
+    public boolean getBoolean(String path) {
+        if (configuration.contains(path)) {
+            return configuration.getBoolean(path);
+        }
+        return false;
     }
 
-    public boolean getBoolean(String path, boolean defaultValue) {
-        return getOrDefault(path, defaultValue);
+    public long getLong(String path) {
+        if (configuration.contains(path)) {
+            return configuration.getLong(path);
+        }
+        return 0L;
     }
 
-    public long getLong(String path, long defaultValue) {
-        return getOrDefault(path, defaultValue);
+    public String getString(String path) {
+        if (configuration.contains(path)) {
+            return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(configuration.getString(path)));
+        }
+        return null;
     }
 
-    public String getString(String path, String defaultValue) {
-        return ChatColor.translateAlternateColorCodes('&', getOrDefault(path, defaultValue));
+    public List<String> getStringList(String path) {
+        if (configuration.contains(path)) {
+            ArrayList<String> strings = new ArrayList<>();
+
+            for (String string : configuration.getStringList(path)) {
+                strings.add(ChatColor.translateAlternateColorCodes('&', string));
+            }
+            return strings;
+        }
+        return null;
     }
 
-    public List<String> getStringList(String path, List<String> defaultValue) {
-        List<String> list = getOrDefault(path, defaultValue);
-        return list.stream().map(s -> ChatColor.translateAlternateColorCodes('&', s)).collect(Collectors.toList());
+    public ItemStack getItemStack(String path) {
+        return new ItemBuilder(getString(path + ".material"))
+                .setDisplayName(getString(path + ".name"))
+                .setLore(getStringList(path + ".lore"))
+                .addEnchantments(getConfigurationSection(path + ".enchants"))
+                .addUnbreakable()
+                .build();
+    }
+
+    public ConfigurationSection getConfigurationSection(String path) {
+        if (configuration.contains(path)) {
+            return configuration.getConfigurationSection(path);
+        }
+        return null;
     }
 
     public void set(String path, Object value) {

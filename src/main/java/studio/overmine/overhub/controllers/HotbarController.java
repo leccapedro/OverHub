@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import studio.overmine.overhub.models.hotbar.types.VisibilityHotbar;
-import studio.overmine.overhub.models.resources.types.CombatSwordResource;
+import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.models.user.VisibilityType;
 import org.bukkit.Bukkit;
@@ -90,6 +90,8 @@ public class HotbarController {
             if (!hotbar.isUnique()) continue;
             inventory.setItem(hotbar.getItemSlot(), hotbar.getItemStack());
         }
+
+        inventory.setItem(ConfigResource.HUB_SWORD_SYSTEM_SLOT, ConfigResource.HUB_SWORD_SYSTEM_SWORD);
 
         User user = userController.getUser(player.getUniqueId());
         Hotbar visibilityHotbar = getHotbar(user.getVisibilityType().getId());

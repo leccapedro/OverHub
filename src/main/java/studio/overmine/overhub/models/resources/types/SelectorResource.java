@@ -25,8 +25,8 @@ public class SelectorResource extends Resource {
         FileConfig serverSelectorFile = plugin.getFileConfig("server-selector");
         FileConfig lobbySelectorFile = plugin.getFileConfig("lobby-selector");
 
-        SERVER_SELECTOR_MENU_TITLE = serverSelectorFile.getString("menu.title", "Server Selector");
-        SERVER_SELECTOR_MENU_ROWS = serverSelectorFile.getInt("menu.rows", 3);
+        SERVER_SELECTOR_MENU_TITLE = serverSelectorFile.getString("menu.title");
+        SERVER_SELECTOR_MENU_ROWS = serverSelectorFile.getInt("menu.rows");
 
         SERVER_SELECTOR_MENU_DECORATIONS = new HashSet<>();
 

@@ -26,7 +26,7 @@ public class FastBoardProvider implements FastBoardAdapter {
         List<String> lines = new ArrayList<>();
 
         for (String line : ScoreboardResource.SCOREBOARD_LINES) {
-            if (line.contains("<scoreboard-footer>")) {
+            if (line.contains("%scoreboard-footer%")) {
                 lines.add(fastBoardController.getFooterAnimation().getCurrent());
                 continue;
             }

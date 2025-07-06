@@ -22,12 +22,12 @@ public class LanguageResource extends Resource {
     public void initialize() {
         FileConfig languageFile = plugin.getFileConfig("language");
 
-        SERVER_MESSAGE_ON_JOIN = languageFile.getString("server-message.on-join", "");
-        SERVER_MESSAGE_ON_QUIT = languageFile.getString("server-message.on-quit", "");
-        COMBAT_SWORD_DISABLED = languageFile.getString("combat-sword-message.pvp-disabled", "");
-        COMBAT_SWORD_TASK_START = languageFile.getString("combat-sword-message.task-start", "");
-        COMBAT_SWORD_TASK_CANCEL = languageFile.getString("combat-sword-message.task-cancel", "");
-        COMBAT_SWORD_TASK_COUNTDOWN = languageFile.getString("combat-sword-message.countdown", "");
-        COMBAT_SWORD_TASK_SUCCESS = languageFile.getString("combat-sword-message.equip-success", "");
+        SERVER_MESSAGE_ON_JOIN = languageFile.getString("server-message.on-join");
+        SERVER_MESSAGE_ON_QUIT = languageFile.getString("server-message.on-quit");
+        COMBAT_SWORD_DISABLED = languageFile.getString("combat-sword-message.pvp-disabled");
+        COMBAT_SWORD_TASK_START = languageFile.getString("combat-sword-message.task-start");
+        COMBAT_SWORD_TASK_CANCEL = languageFile.getString("combat-sword-message.task-cancel");
+        COMBAT_SWORD_TASK_COUNTDOWN = languageFile.getString("combat-sword-message.countdown");
+        COMBAT_SWORD_TASK_SUCCESS = languageFile.getString("combat-sword-message.equip-success");
     }
 }

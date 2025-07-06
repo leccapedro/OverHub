@@ -9,7 +9,7 @@ scoreboard:
     - "&6Rank:"
     - "&f%luckperms_primary_group_name%"
     - ""
-    - "<scoreboard-footer>"
+    - "%scoreboard-footer%"
     - "&7&m-----------------------------"
 
 title-animation:

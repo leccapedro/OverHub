@@ -74,18 +74,4 @@ public class PlayerListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		event.setCancelled(event.getWhoClicked().getGameMode() != GameMode.CREATIVE);
 	}
-
-	@EventHandler
-	public void onPlayerDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player) {
-			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void onPlayerDamageByEntity(EntityDamageByEntityEvent event) {
-		if (event.getEntity() instanceof Player) {
-			event.setCancelled(true);
-		}
-	}
 }

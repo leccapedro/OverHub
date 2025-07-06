@@ -1,23 +1,18 @@
 package studio.overmine.overhub.listeners;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
-import studio.overmine.overhub.models.resources.types.CombatSwordResource;
-import studio.overmine.overhub.models.resources.types.LanguageResource;
-import studio.overmine.overhub.tasks.CombatTask;
-import studio.overmine.overhub.utilities.ChatUtil;
-
-import java.util.UUID;
+import studio.overmine.overhub.models.combat.CombatPlayer;
+import studio.overmine.overhub.models.combat.CombatStatus;
+import studio.overmine.overhub.models.resources.types.ConfigResource;
 
 /**
  * @author Risas
@@ -25,66 +20,80 @@ import java.util.UUID;
  * @discord https://risas.me/discord
  */
 public class CombatListener implements Listener {
+
     private final OverHub plugin;
     private final CombatController combatController;
 
-    public CombatListener(OverHub plugin) {
+    public CombatListener(OverHub plugin, CombatController combatController) {
         this.plugin = plugin;
-        this.combatController = plugin.getCombatController();
+        this.combatController = combatController;
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    public void onCombatSword(PlayerItemHeldEvent event) {
+        if (!ConfigResource.HUB_SWORD_SYSTEM_ENABLED) return;
+
         Player player = event.getPlayer();
-        ItemStack item = combatController.buildItem(CombatSwordResource.ITEM_SWORD);
-        player.getInventory().setItem(2, item);
-    }
+        ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
 
-    @EventHandler
-    public void onHotbarHeld(PlayerItemHeldEvent event) {
-        Player player = event.getPlayer();
-        ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
-        UUID playerId = player.getUniqueId();
-        FileConfiguration config = plugin.getConfig();
+        if (itemStack != null && itemStack.equals(ConfigResource.HUB_SWORD_SYSTEM_SWORD)) {
+            CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
 
-        if (combatController.getEquipTasks().containsKey(playerId)) {
-            combatController.getEquipTasks().get(playerId).cancel();
-            combatController.getEquipTasks().remove(playerId);
-            ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_TASK_CANCEL);
-        }
+            if (combatPlayer != null && combatPlayer.isPvP()) {
+                combatPlayer.stopCombatTask();
+                return;
+            }
 
-        ConfigurationSection swordSection = config.getConfigurationSection("sword");
-        ItemStack swordItem = combatController.buildItem(swordSection);
-
-        if (newItem != null && newItem == swordItem) {
-            combatController.getPlayersPvP().put(playerId, true);
-            ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_TASK_START);
-
-            CombatTask task = new CombatTask(player, combatController::equipPlayer);
-            BukkitTask bukkitTask = task.runTaskTimer(plugin, 0L, 20L);
-            combatController.getEquipTasks().put(playerId, bukkitTask);
-        } else {
-            combatController.getPlayersPvP().put(playerId, false);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
+            combatController.addCombatPlayer(player);
             return;
         }
 
-        Player victim = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
-        UUID victimId = victim.getUniqueId();
-        UUID attackerId = attacker.getUniqueId();
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        if (combatPlayer == null) return;
 
-        boolean victimInPvP = combatController.getPlayersPvP().getOrDefault(victimId, false);
-        boolean attackerInPvP = combatController.getPlayersPvP().getOrDefault(attackerId, false);
-
-        if (!victimInPvP || !attackerInPvP) {
-            event.setCancelled(true);
-            ChatUtil.sendMessage(victim, LanguageResource.COMBAT_SWORD_DISABLED);
+        if (combatPlayer.getStatus() == CombatStatus.EQUIPPING) {
+            combatPlayer.stopCombatTask();
+            combatController.removeCombatPlayer(player);
         }
+        else if (combatPlayer.isPvP()) {
+            combatPlayer.startCombatTask(plugin, combatController);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCombatDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) return;
+
+        event.setCancelled(true);
+
+        Player player = (Player) event.getEntity();
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        if (combatPlayer == null) return;
+
+        Player damager = (Player) event.getDamager();
+        CombatPlayer damagerCombatPlayer = combatController.getCombatPlayer(damager);
+        if (damagerCombatPlayer == null) return;
+
+        if (combatPlayer.isPvP() && damagerCombatPlayer.isPvP()) {
+            event.setCancelled(false);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+
+        CombatPlayer combatPlayer = combatController.getCombatPlayer((Player) event.getEntity());
+        if (combatPlayer != null && combatPlayer.isPvP()) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onCombatQuit(PlayerQuitEvent event) {
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(event.getPlayer());
+        if (combatPlayer == null) return;
+
+        combatPlayer.stopCombatTask();
     }
 }

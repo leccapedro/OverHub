@@ -2,14 +2,13 @@ package studio.overmine.overhub.utilities.item;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -165,11 +164,6 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addLoreLine(String line) {
-        this.itemMeta.getLore().add(ChatUtil.translate(line));
-        return this;
-    }
-
     public ItemBuilder setEnchanted(boolean enchanted) {
         if (enchanted) {
             this.itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -178,18 +172,24 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addEnchantment() {
-        this.itemStack.addEnchantment(Enchantment.DURABILITY, 1);
+    public ItemBuilder addEnchantments(ConfigurationSection section) {
+        if (section != null) {
+            section.getKeys(false).forEach(enchantId -> {
+                Enchantment enchantment = Enchantment.getByName(enchantId.toUpperCase());
+
+                if (enchantment == null) {
+                    Bukkit.getLogger().warning("Enchantment " + enchantId + " not found in config file.");
+                    return;
+                }
+
+                this.itemMeta.addEnchant(enchantment, section.getInt(enchantId), true);
+            });
+        }
         return this;
     }
 
-    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
-        this.itemStack.addEnchantment(enchantment, level);
-        return this;
-    }
-
-    public ItemBuilder addUnsafeEnchantment(Enchantment enchantment, int level) {
-        this.itemStack.addUnsafeEnchantment(enchantment, level);
+    public ItemBuilder addUnbreakable() {
+        this.itemMeta.setUnbreakable(true);
         return this;
     }
 

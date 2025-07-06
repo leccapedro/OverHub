@@ -45,8 +45,8 @@ public class ServerSelector {
 
         this.loadOrCreateFolder();
 
-        this.menuTitle = subServerFile.getString("menu.title", "%server% Server Selector");
-        this.menuRows = subServerFile.getInt("menu.rows", 3);
+        this.menuTitle = subServerFile.getString("menu.title");
+        this.menuRows = subServerFile.getInt("menu.rows");
         this.menuDecorations = new HashSet<>();
 
         ConfigurationSection serverSelectorDecorationSection = subServerFile.getConfiguration().getConfigurationSection("menu.decorations");

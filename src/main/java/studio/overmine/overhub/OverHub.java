@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.bukkit.Bukkit;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
 import studio.overmine.overhub.models.resources.types.ScoreboardResource;
@@ -44,7 +45,7 @@ public class OverHub extends JavaPlugin {
         this.resourceController = new ResourceController(this);
         this.userController = new UserController(this);
         this.spawnController = new SpawnController(this);
-        this.combatController = new CombatController();
+        this.combatController = new CombatController(this);
         this.hotbarController = new HotbarController(this);
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
@@ -64,7 +65,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new WorldListener(), this);
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
-        pluginManager.registerEvents(new CombatListener(this), this);
+        pluginManager.registerEvents(new CombatListener(this, combatController), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -73,6 +74,9 @@ public class OverHub extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("overhub")).setTabCompleter(new OverHubCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(spawnController));
         Objects.requireNonNull(this.getCommand("setspawn")).setExecutor(new SetSpawnCommand(spawnController));
+
+        Bukkit.getScheduler().runTaskLater(this, () ->
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
     }
 
     @Override

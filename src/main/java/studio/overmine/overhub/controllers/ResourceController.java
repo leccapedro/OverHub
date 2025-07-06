@@ -21,7 +21,6 @@ public class ResourceController {
         this.resources.add(new LanguageResource(plugin));
         this.resources.add(new SelectorResource(plugin));
         this.resources.add(new ScoreboardResource(plugin));
-        this.resources.add(new CombatSwordResource(plugin));
         this.onReload();
     }
 

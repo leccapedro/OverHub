@@ -13,7 +13,7 @@ public class SpawnController {
 
     public SpawnController(OverHub plugin) {
         this.configFile = plugin.getFileConfig("config");
-        this.spawnLocation = SerializeUtil.deserializeLocation(configFile.getString("spawn-location", null));
+        this.spawnLocation = SerializeUtil.deserializeLocation(configFile.getString("spawn-location"));
     }
 
     public void setSpawnLocation(Location location) {
