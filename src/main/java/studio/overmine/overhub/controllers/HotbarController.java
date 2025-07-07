@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import studio.overmine.overhub.models.hotbar.types.CustomHotbar;
 import studio.overmine.overhub.models.hotbar.types.VisibilityHotbar;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.user.User;
@@ -101,17 +102,26 @@ public class HotbarController {
     public final void onReload(boolean reload) {
         if (reload) hotbarMap.clear();
 
-        ConfigurationSection section = hotbarFile.getConfiguration();
+        ConfigurationSection defaultsSection = hotbarFile.getConfiguration().getConfigurationSection("defaults");
+        if (defaultsSection == null) throw new IllegalStateException("No defaults section found in hotbar configuration.");
 
         registerHotbars(
-                registerHotbar(new ServerSelectorHotbar("server-selector", plugin), section),
-                registerHotbar(new EnderButtHotbar("ender-butt"), section),
-                registerHotbar(new VisibilityHotbar("visibility-all", plugin,this, VisibilityType.DONATOR), section),
-                registerHotbar(new VisibilityHotbar("visibility-donator", plugin, this, VisibilityType.STAFF), section),
-                registerHotbar(new VisibilityHotbar("visibility-staff", plugin,this, VisibilityType.FRIEND), section),
-                registerHotbar(new VisibilityHotbar("visibility-friend", plugin,this, VisibilityType.NONE), section),
-                registerHotbar(new VisibilityHotbar("visibility-none", plugin,this, VisibilityType.ALL), section)
+                registerHotbar(new ServerSelectorHotbar("server-selector", plugin), defaultsSection),
+                registerHotbar(new EnderButtHotbar("ender-butt"), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-all", plugin,this, VisibilityType.DONATOR), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-donator", plugin, this, VisibilityType.STAFF), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-staff", plugin,this, VisibilityType.FRIEND), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-friend", plugin,this, VisibilityType.NONE), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-none", plugin,this, VisibilityType.ALL), defaultsSection)
         );
+
+        ConfigurationSection customsSection = hotbarFile.getConfiguration().getConfigurationSection("customs");
+        if (customsSection == null) throw new IllegalStateException("No customs section found in hotbar configuration.");
+
+        customsSection.getKeys(false).forEach(customId -> {
+            Hotbar hotbar = registerHotbar(new CustomHotbar(customId, customsSection.getStringList(customId + ".actions")), customsSection);
+            hotbarMap.put(hotbar.getName(), hotbar);
+        });
 
         if (reload) Bukkit.getOnlinePlayers().forEach(this::giveHotbar);
     }

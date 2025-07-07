@@ -13,6 +13,7 @@ public class EnderButtHotbar extends Hotbar {
     @Override
     public void onAction(Player player) {
         XSound.ENTITY_EXPERIENCE_ORB_PICKUP.play(player);
+
         player.setVelocity(player.getLocation().getDirection().normalize().setY(2.0));
         player.setVelocity(player.getLocation().getDirection().normalize().multiply(2F));
         player.updateInventory();

@@ -1,56 +1,68 @@
-server-selector:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lSERVER SELECTOR"
-    lore: {}
-    material: "COMPASS"
-    slot: 0
-ender-butt:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lENDER BUTT"
-    lore: {}
-    material: "ENDER_PEARL"
-    slot: 8
-visibility-all:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lVISIBILITY &8┃ &a&lALL"
-    lore: {}
-    material: "LIME_DYE"
-    slot: 7
-visibility-donator:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lVISIBILITY &8┃ &e&lDONATOR"
-    lore: {}
-    material: "YELLOW_DYE"
-    slot: 7
-visibility-staff:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lVISIBILITY &8┃ &b&lSTAFF"
-    lore: {}
-    material: "CYAN_DYE"
-    slot: 7
-visibility-friend:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lVISIBILITY &8┃ &d&lFRIEND"
-    lore: {}
-    material: "PINK_DYE"
-    slot: 7
-visibility-none:
-  enabled: true
-  item:
-    head: ""
-    name: "&6&lVISIBILITY &8┃ &7&lNONE"
-    lore: {}
-    material: "GRAY_DYE"
-    slot: 7
+defaults:
+  server-selector:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lSERVER SELECTOR"
+      lore: {}
+      material: "COMPASS"
+      slot: 0
+  ender-butt:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lENDER BUTT"
+      lore: {}
+      material: "ENDER_PEARL"
+      slot: 8
+  visibility-all:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lVISIBILITY &8┃ &a&lALL"
+      lore: {}
+      material: "LIME_DYE"
+      slot: 7
+  visibility-donator:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lVISIBILITY &8┃ &e&lDONATOR"
+      lore: {}
+      material: "YELLOW_DYE"
+      slot: 7
+  visibility-staff:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lVISIBILITY &8┃ &b&lSTAFF"
+      lore: {}
+      material: "CYAN_DYE"
+      slot: 7
+  visibility-friend:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lVISIBILITY &8┃ &d&lFRIEND"
+      lore: {}
+      material: "PINK_DYE"
+      slot: 7
+  visibility-none:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lVISIBILITY &8┃ &7&lNONE"
+      lore: {}
+      material: "GRAY_DYE"
+      slot: 7
+customs:
+  custom-item:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lSTORE"
+      lore: {}
+      material: "DIAMOND"
+      slot: 6
+    actions:
+      - "[MESSAGE] &2&lSTORE &8┃ &fVisit our store at &astore.example.com&f."
