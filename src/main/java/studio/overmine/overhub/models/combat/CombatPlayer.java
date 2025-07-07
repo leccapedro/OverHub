@@ -30,6 +30,10 @@ public class CombatPlayer {
         return status == CombatStatus.UN_EQUIPPING;
     }
 
+    public boolean isCombatTaskRunning() {
+        return combatTask != null;
+    }
+
     public void startCombatTask(OverHub plugin, CombatController combatController) {
         if (combatTask != null) {
             combatTask.cancel();

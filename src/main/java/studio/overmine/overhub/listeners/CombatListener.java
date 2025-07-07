@@ -55,7 +55,7 @@ public class CombatListener implements Listener {
             combatPlayer.stopCombatTask();
             combatController.removeCombatPlayer(player);
         }
-        else if (combatPlayer.isPvP()) {
+        else if (combatPlayer.isPvP() && !combatPlayer.isCombatTaskRunning()) {
             combatPlayer.startCombatTask(plugin, combatController);
         }
     }
