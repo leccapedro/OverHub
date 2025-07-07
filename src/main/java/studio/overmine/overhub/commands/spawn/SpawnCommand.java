@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import studio.overmine.overhub.controllers.SpawnController;
+import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 import org.bukkit.entity.Player;
 
@@ -23,8 +24,9 @@ public class SpawnCommand implements CommandExecutor {
 			return true;
 		}
 		Player player = (Player) sender;
+
 		spawnController.toSpawn(player);
-		ChatUtil.sendMessage(player, "&aTeleported to spawn.");
+		ChatUtil.sendMessage(player, LanguageResource.SPAWN_MESSAGE_TELEPORT);
 		return false;
 	}
 }

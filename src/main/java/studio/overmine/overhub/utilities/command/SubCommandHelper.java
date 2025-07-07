@@ -11,6 +11,7 @@ public class SubCommandHelper {
 
     public static String build(String template, Map<String, String> replacements) {
         String result = template;
+
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             result = result.replace(entry.getKey(), entry.getValue());
         }
@@ -19,6 +20,7 @@ public class SubCommandHelper {
 
     public static String getSubCommandFormat(String label, Map<String, SubCommand> subCommands, String title) {
         StringBuilder subcommandsFormatted = new StringBuilder();
+
         for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
             Map<String, String> placeholders = new LinkedHashMap<>();
             placeholders.put("%label%", label);
@@ -29,6 +31,7 @@ public class SubCommandHelper {
                     " &7● &f/%label% %subcommand% &8- &e%description%",
                     placeholders
             );
+
             subcommandsFormatted.append(line).append("\n");
         }
 
@@ -50,8 +53,10 @@ public class SubCommandHelper {
     @SafeVarargs
     public <K, V> LinkedHashMap<K, V> of(Map.Entry<K, V>... entries) {
         LinkedHashMap<K, V> map = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : entries)
+
+        for (Map.Entry<K, V> entry : entries)  {
             map.put(entry.getKey(), entry.getValue());
+        }
         return map;
     }
 }

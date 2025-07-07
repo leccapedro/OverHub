@@ -1,11 +1,13 @@
 package studio.overmine.overhub.tasks;
 
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
+import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 public class CombatTask extends BukkitRunnable {
@@ -31,23 +33,29 @@ public class CombatTask extends BukkitRunnable {
                 if (countdown <= 0) {
                     reset();
 
+                    XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
                     combatPlayer.onApplyEquipment(combatController);
-                    ChatUtil.sendMessage(player, "&4&lLOBBY &8» &fTu modo pvp se ha &aactivado&f.");
+                    ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_EQUIPPED);
                     return;
                 }
 
-                ChatUtil.sendMessage(player, "&4&lLOBBY &8» &fTu modo pvp se activará en &e" + countdown + " &fsegundos.");
+                XSound.BLOCK_NOTE_BLOCK_BANJO.play(player, 1F, 1F);
+                ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_EQUIPPING
+                        .replace("%countdown%", String.valueOf(countdown)));
                 break;
             case UN_EQUIPPING:
                 if (countdown <= 0) {
                     reset();
 
+                    XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
                     combatPlayer.onApplyEquipment(combatController);
-                    ChatUtil.sendMessage(player, "&4&lLOBBY &8» &fTu modo pvp se ha &cdesactivado&f.");
+                    ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_UN_EQUIPPED);
                     return;
                 }
 
-                ChatUtil.sendMessage(player, "&4&lLOBBY &8» &fTu modo pvp se desactivará en &e" + countdown + " &fsegundos.");
+                XSound.BLOCK_NOTE_BLOCK_BANJO.play(player, 1F, 1F);
+                ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_UN_EQUIPPING
+                        .replace("%countdown%", String.valueOf(countdown)));
                 break;
         }
 

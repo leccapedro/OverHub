@@ -2,9 +2,12 @@ server-message:
   on-join: "&7[&a✔&7] &7%player%"
   on-quit: "&7[&c✘&7] &7%player%"
 
+spawn-message:
+  set: "&aSpawn location has been set."
+  teleport: "&aTeleported to spawn."
+
 combat-sword-message:
-  task-start: "&aEmpezando cuenta atrás de 5 segundos..."
-  countdown: "&eFaltan %countdown% segundos para equiparte."
-  task-cancel: "&cEquipamiento cancelado."
-  equip-success: "&a¡Equipado para el combate!"
-  pvp-disabled: "&cEl PvP está desactivado para uno de los jugadores."
+  equipping: "&4&lLOBBY &8» &fYour pvp mode will be enabled in &e%countdown% &seconds."
+  equipped: "&4&lLOBBY &8» &fYour pvp mode has been &aenabled&f."
+  un-equipping: "&4&lLOBBY &8» &fYour pvp mode will be disabled in &e%countdown% &seconds."
+  un-equipped: "&4&lLOBBY &8» &fYour pvp mode has been &cdisabled&f."

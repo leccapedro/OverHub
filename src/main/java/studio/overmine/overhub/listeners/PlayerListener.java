@@ -44,7 +44,6 @@ public class PlayerListener implements Listener {
 		player.setFoodLevel(20);
 		player.setExp(0);
 		player.setGameMode(GameMode.ADVENTURE);
-		player.setWalkSpeed(0.5F);
 
 		ConfigResource.WELCOME_MESSAGE
 				.forEach(message -> ChatUtil.sendPlaceholderMessage(player, message
