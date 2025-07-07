@@ -33,7 +33,7 @@ public class OverHub extends JavaPlugin {
     private FastBoardController fastBoardController;
     private CombatController combatController;
     private BossBarController bossBarController;
-    //private ParkourController parkourController;
+    private ParkourController parkourController;
 
     @Override
     public void onLoad() {
@@ -59,7 +59,7 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
-        //this.parkourController = new ParkourController(this);
+        this.parkourController = new ParkourController(this);
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);

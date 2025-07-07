@@ -1,5 +1,6 @@
 package studio.overmine.overhub.controllers;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.particles.XParticle;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -88,7 +89,7 @@ public class ParkourController {
         World world = location.getWorld();
         if (world == null) return;
 
-        List<Material> blockMaterials = generator.getBlockMaterials();
+        List<Material> blockMaterials = ConfigResource.PARKOUR_GENERATOR_BLOCKS;
         Material blockType = blockMaterials.get(random.nextInt(blockMaterials.size()));
         world.getBlockAt(location).setType(blockType);
         spawnExplosionEffect(location, 1);
@@ -103,9 +104,9 @@ public class ParkourController {
         int minX = cuboid.getLowerX(), maxX = cuboid.getUpperX();
         int minZ = cuboid.getLowerZ(), maxZ = cuboid.getUpperZ();
         int minY = cuboid.getLowerY(), maxY = cuboid.getUpperY();
-        double minDistSquared = Math.pow(generator.getMinDistance(), 2);
+        double minDistSquared = Math.pow(ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN, 2);
 
-        int maxAttempts = generator.getMaxPlacementAttempts();
+        int maxAttempts = ConfigResource.PARKOUR_GENERATOR_ATTEMPTS;
         int distance = getRandomDistance(random);
         int newX = x, newZ = z;
 
@@ -141,7 +142,7 @@ public class ParkourController {
     public Location findValidStartingPoint() {
         World world = cuboid.getWorld();
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        int maxAttempts = generator.getMaxPlacementAttempts();
+        int maxAttempts = ConfigResource.PARKOUR_GENERATOR_ATTEMPTS;
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
             int x = random.nextInt(cuboid.getLowerX(), cuboid.getUpperX() + 1);
             int y = random.nextInt(cuboid.getLowerY(), cuboid.getUpperY() + 1);
@@ -155,7 +156,8 @@ public class ParkourController {
     }
 
     private int getRandomDistance(ThreadLocalRandom random) {
-        return generator.getMinDistance() + random.nextInt(generator.getMaxDistance() - generator.getMinDistance() + 1);
+        return ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN +
+                random.nextInt(ConfigResource.PARKOUR_GENERATOR_DISTANCE_MAX - ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN + 1);
     }
 
     private int clamp(int value, int min, int max) {

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -19,7 +20,7 @@ import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 
-public class ParkourListener {
+public class ParkourListener implements Listener {
     private final OverHub plugin;
     private final ParkourController parkourController;
 
@@ -58,7 +59,7 @@ public class ParkourListener {
                 plugin.getUserController().getUser(player.getUniqueId()).setParkourScore(parkour.getScore());
             }
 
-            plugin.getParkourController().stopParkour(player);
+            parkourController.stopParkour(player);
 
             return;
         }
