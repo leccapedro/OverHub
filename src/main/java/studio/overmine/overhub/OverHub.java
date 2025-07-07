@@ -30,6 +30,7 @@ public class OverHub extends JavaPlugin {
     private LobbySelectorController lobbySelectorController;
     private FastBoardController fastBoardController;
     private CombatController combatController;
+    private ParkourController parkourController;
 
     @Override
     public void onEnable() {
@@ -40,7 +41,7 @@ public class OverHub extends JavaPlugin {
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
-        this.fileConfigs.put("combat-sword-config", new FileConfig(this, "combat-sword-config.yml"));
+        this.fileConfigs.put("parkour", new FileConfig(this, "parkour.yml"));
 
         this.resourceController = new ResourceController(this);
         this.userController = new UserController(this);
@@ -50,6 +51,7 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
+        this.parkourController = new ParkourController(this);
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
