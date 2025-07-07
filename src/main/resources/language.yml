@@ -7,7 +7,7 @@ spawn-message:
   teleport: "&aTeleported to spawn."
 
 combat-sword-message:
-  equipping: "&4&lLOBBY &8» &fYour pvp mode will be enabled in &e%countdown% &seconds."
+  equipping: "&4&lLOBBY &8» &fYour pvp mode will be enabled in &e%countdown% &fseconds."
   equipped: "&4&lLOBBY &8» &fYour pvp mode has been &aenabled&f."
-  un-equipping: "&4&lLOBBY &8» &fYour pvp mode will be disabled in &e%countdown% &seconds."
+  un-equipping: "&4&lLOBBY &8» &fYour pvp mode will be disabled in &e%countdown% &fseconds."
   un-equipped: "&4&lLOBBY &8» &fYour pvp mode has been &cdisabled&f."

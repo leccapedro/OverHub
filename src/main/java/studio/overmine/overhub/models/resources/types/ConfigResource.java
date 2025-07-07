@@ -17,6 +17,7 @@ public class ConfigResource extends Resource {
     public static int HUB_SWORD_SYSTEM_DELAY, HUB_SWORD_SYSTEM_SLOT;
     public static ItemStack HUB_SWORD_SYSTEM_SWORD;
     public static ItemStack[] HUB_SWORD_SYSTEM_EQUIPMENT;
+    public static boolean BOSS_BAR_SYSTEM_ENABLED;
 
     public ConfigResource(OverHub plugin) {
         super(plugin);
@@ -40,5 +41,6 @@ public class ConfigResource extends Resource {
                 configFile.getItemStack("hub-sword-system.equipment.chestplate"),
                 configFile.getItemStack("hub-sword-system.equipment.helmet")
         };
+        BOSS_BAR_SYSTEM_ENABLED = configFile.getBoolean("boss-bar-system.enabled");
     }
 }

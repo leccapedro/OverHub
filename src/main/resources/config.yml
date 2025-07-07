@@ -14,6 +14,22 @@ chat-system:
   enabled: true
   format: "&7%player% &8» &7%message%"
 
+boss-bar-system: # NOT AVAILABLE IN 1.8
+  enabled: true
+  types:
+    example-1:
+      title: "&aExample #1 | Boss Bar"
+      color: GREEN
+      style: SOLID
+    example-2:
+      title: "&cExample #2 | Boss Bar"
+      color: RED
+      style: SOLID
+    example-3:
+      title: "&bExample #3 | Boss Bar"
+      color: BLUE
+      style: SOLID
+
 hub-sword-system:
   enabled: true
   delay: 5

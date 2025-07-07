@@ -1,5 +1,6 @@
 package studio.overmine.overhub.utilities.item;
 
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
+import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ItemBuilder {
@@ -189,7 +191,23 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addUnbreakable() {
-        this.itemMeta.setUnbreakable(true);
+        if (OverHub.getVersion() <= 12) {
+            try {
+                Method method = itemMeta.getClass().getMethod("spigot");
+                method.setAccessible(true);
+
+                Object meta = method.invoke(itemMeta);
+                Method unbreakable = meta.getClass().getMethod("setUnbreakable", boolean.class);
+                unbreakable.setAccessible(true);
+                unbreakable.invoke(meta, true);
+            }
+            catch (Exception ex) {
+                Bukkit.getLogger().warning("Failed to set unbreakable item meta: " + ex.getMessage());
+            }
+        }
+        else {
+            this.itemMeta.setUnbreakable(true);
+        }
         return this;
     }
 

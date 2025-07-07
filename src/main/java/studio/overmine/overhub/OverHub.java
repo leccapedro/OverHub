@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.bukkit.Bukkit;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
+import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.ScoreboardResource;
 import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
 import org.bukkit.plugin.PluginManager;
@@ -21,6 +22,7 @@ import lombok.Getter;
 @Getter
 public class OverHub extends JavaPlugin {
 
+    @Getter private static int version;
     private Map<String, FileConfig> fileConfigs;
     private ResourceController resourceController;
     private UserController userController;
@@ -30,7 +32,14 @@ public class OverHub extends JavaPlugin {
     private LobbySelectorController lobbySelectorController;
     private FastBoardController fastBoardController;
     private CombatController combatController;
-    private ParkourController parkourController;
+    private BossBarController bossBarController;
+    //private ParkourController parkourController;
+
+    @Override
+    public void onLoad() {
+        version = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]
+                .split("-")[0]);
+    }
 
     @Override
     public void onEnable() {
@@ -41,7 +50,6 @@ public class OverHub extends JavaPlugin {
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
-        this.fileConfigs.put("parkour", new FileConfig(this, "parkour.yml"));
 
         this.resourceController = new ResourceController(this);
         this.userController = new UserController(this);
@@ -51,11 +59,14 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
-        this.parkourController = new ParkourController(this);
+        //this.parkourController = new ParkourController(this);
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
             this.fastBoardController.setAdapter(new FastBoardProvider(fastBoardController));
+        }
+        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) {
+            this.bossBarController = new BossBarController(this, getFileConfig("config"));
         }
 
         PluginManager pluginManager = this.getServer().getPluginManager();
@@ -68,6 +79,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
         pluginManager.registerEvents(new CombatListener(this, combatController), this);
+        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) pluginManager.registerEvents(new BossBarListener(bossBarController), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -92,6 +104,7 @@ public class OverHub extends JavaPlugin {
         this.hotbarController.onReload(true);
         this.serverSelectorController.onReload();
         this.lobbySelectorController.onReload();
+        if (this.bossBarController != null) this.bossBarController.onReload();
         if (this.fastBoardController != null) this.fastBoardController.onReload();
     }
 
