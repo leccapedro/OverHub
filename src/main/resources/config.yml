@@ -63,3 +63,47 @@ hub-sword-system:
       material: DIAMOND_BOOTS
       enchants:
         protection_environmental: 2
+
+  parkour-system:
+    enabled: true
+    streak:
+      points-intervals: 10 #
+      # List of commands to be executed when the streak is achieved
+      # Use without the key "/"
+      # Placeholder <target>
+      # For example:
+      # - give <target> <item> <amount>
+      commands:
+    generator:
+      # Possible attempts to generate a new block, reference value: 10
+      attempts: 10
+      # It is recommended to use a minimum distance of 1 and a maximum of 4 to avoid problems and errors.
+      min-distance: 2
+      max-distance: 3
+      animation:
+        enabled: true
+        # You can find a list of particle here:
+        # Latest Versions: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+        # Legacy Versions: https://helpch.at/docs/1.8.8/index.html?org/bukkit/Effect.html
+        particle-type: flame
+        # Intensity of particles
+        particle-intensity: 1
+      sound:
+        enabled: true
+        # Use this format: <sound>;<volume>;<pitch>
+        # You can find a list of sounds here:
+        # Latest Versions: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+        # Legacy Versions: https://helpch.at/docs/1.8.8/index.html?org/bukkit/Sound.html
+        type: 'ENTITY_CHICKEN_EGG;0.5;1.0'
+      # Here you can place as many blocks as you want
+      # Latest Versions: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+      # Legacy Versions: https://helpch.at/docs/1.8.8/index.html?org/bukkit/Material.html
+      # Format -> Latest: <id>
+      # Format -> Legacy: <id> or <id;data>
+      # Recommendation: place solid blocks
+      block-materials:
+        - 'OBSIDIAN'
+        - 'NOTE_BLOCK'
+        - 'SANDSTONE'
+        - 'DIAMOND_BLOCK'
+        - 'TNT'

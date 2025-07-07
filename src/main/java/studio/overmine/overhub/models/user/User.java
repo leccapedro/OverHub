@@ -17,12 +17,14 @@ public class User {
     private String name;
     private VisibilityType visibilityType;
     private FileConfig dataFile;
+    private int parkourScore;
 
     public User(OverHub plugin, UUID uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.visibilityType = VisibilityType.ALL;
         this.dataFile = new FileConfig(plugin, "data/user-data/" + uuid.toString() + ".yml");
+        this.parkourScore = 0;
     }
     
     public void executeCurrentVisibility() {
@@ -78,5 +80,9 @@ public class User {
     private void executeNoneVisibility() {
         Player player = Bukkit.getPlayer(uuid);
         Bukkit.getOnlinePlayers().forEach(player::hidePlayer);
+    }
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
     }
 }
