@@ -18,6 +18,7 @@ public class ConfigResource extends Resource {
     public static ItemStack HUB_SWORD_SYSTEM_SWORD;
     public static ItemStack[] HUB_SWORD_SYSTEM_EQUIPMENT;
     public static List<String> PARKOUR_STREAK_COMMANDS;
+    public static boolean BOSS_BAR_SYSTEM_ENABLED;
     public static int PARKOUR_STREAK_STREAK_INTERVAL;
 
     public ConfigResource(OverHub plugin) {
@@ -42,6 +43,7 @@ public class ConfigResource extends Resource {
                 configFile.getItemStack("hub-sword-system.equipment.chestplate"),
                 configFile.getItemStack("hub-sword-system.equipment.helmet")
         };
+        BOSS_BAR_SYSTEM_ENABLED = configFile.getBoolean("boss-bar-system.enabled");
         PARKOUR_STREAK_COMMANDS = configFile.getStringList("parkour-system.streak.commands");
         PARKOUR_STREAK_STREAK_INTERVAL = configFile.getInt("parkour-system.streak.points-interval");
     }
