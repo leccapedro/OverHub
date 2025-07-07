@@ -17,14 +17,14 @@ public class User {
     private String name;
     private VisibilityType visibilityType;
     private FileConfig dataFile;
-    private int parkourScore;
+    private int parkourHS;
 
     public User(OverHub plugin, UUID uuid, String name) {
         this.uuid = uuid;
         this.name = name;
         this.visibilityType = VisibilityType.ALL;
         this.dataFile = new FileConfig(plugin, "data/user-data/" + uuid.toString() + ".yml");
-        this.parkourScore = 0;
+        this.parkourHS = 0;
     }
     
     public void executeCurrentVisibility() {

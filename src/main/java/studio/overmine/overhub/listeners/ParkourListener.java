@@ -1,6 +1,5 @@
 package studio.overmine.overhub.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -12,77 +11,69 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.ParkourController;
+import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
 import studio.overmine.overhub.models.parkour.ParkourSelection;
-import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ParkourListener implements Listener {
     private final OverHub plugin;
     private final ParkourController parkourController;
+    private final UserController userController;
 
     public ParkourListener(OverHub plugin) {
         this.plugin = plugin;
         this.parkourController = plugin.getParkourController();
+        this.userController = plugin.getUserController();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        ParkourPlayer parkour = parkourController.getParkours().get(player.getUniqueId());
-
-        if (parkour != null) parkourController.stopParkour(player);
+        parkourController.stopParkour(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        ParkourPlayer parkour = parkourController.getParkours().get(player.getUniqueId());
+        ParkourPlayer parkour = parkourController.getParkour(player);
         if (parkour == null) return;
 
         Location nextBlock = parkour.getNextTargetBlock();
-        Location playerLocation = player.getLocation();
+        if (nextBlock == null) return;
 
-        double playerY = playerLocation.getY();
+        Location playerLoc = player.getLocation();
+        double playerY = playerLoc.getY();
         double lowestBlockY = parkour.getLowestBlockHeight();
 
         if (playerY < lowestBlockY - 1) {
-            ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_FALL.replace("%score%", String.valueOf(parkour.getScore())));
-
-            Bukkit.getScheduler().runTask(plugin, () -> player.teleport(parkour.getPreviousLocation()));
-
-            if (parkour.isNewHighScore(plugin.getUserController().getUser(player.getUniqueId()))) {
+            if (parkour.isNewHighScore(player.getUniqueId())) {
                 ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_NEW_HS.replace("%score%", String.valueOf(parkour.getScore())));
-                plugin.getUserController().getUser(player.getUniqueId()).setParkourScore(parkour.getScore());
+                userController.getUser(player.getUniqueId()).setParkourHS(parkour.getScore());
             }
-
+            else ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_FALL.replace("%score%", String.valueOf(parkour.getScore())));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.teleport(parkour.getPreviousLocation());
+                }
+            }.runTask(plugin);
             parkourController.stopParkour(player);
-
             return;
         }
 
-        if (Math.abs(playerY - nextBlock.getY()) < 1.5) {
-            double blockMinX = nextBlock.getX() - 0.2;
-            double blockMaxX = nextBlock.getX() + 1.2;
-            double blockMinZ = nextBlock.getZ() - 0.2;
-            double blockMaxZ = nextBlock.getZ() + 1.2;
+        double blockMinX = nextBlock.getX() - 0.3;
+        double blockMaxX = nextBlock.getX() + 1.3;
+        double blockMinZ = nextBlock.getZ() - 0.3;
+        double blockMaxZ = nextBlock.getZ() + 1.3;
 
-            double playerX = playerLocation.getX();
-            double playerZ = playerLocation.getZ();
-
-            if (playerX >= blockMinX && playerX <= blockMaxX &&
-                    playerZ >= blockMinZ && playerZ <= blockMaxZ) {
-                parkour.advance(player);
-                if (parkour.getScore() % ConfigResource.PARKOUR_STREAK_STREAK_INTERVAL == 0) {
-                    ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_STREAK.replace("%score%", String.valueOf(parkour.getScore())));
-                    if (!ConfigResource.PARKOUR_STREAK_COMMANDS.isEmpty())
-                        ConfigResource.PARKOUR_STREAK_COMMANDS.forEach(
-                                string -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), ChatUtil.placeholder(player, string)));
-                }
-            }
+        if (Math.abs(playerY - nextBlock.getY()) < 1.5 &&
+                playerLoc.getX() >= blockMinX && playerLoc.getX() <= blockMaxX &&
+                playerLoc.getZ() >= blockMinZ && playerLoc.getZ() <= blockMaxZ) {
+            parkour.advance();
         }
     }
 
@@ -114,7 +105,7 @@ public class ParkourListener implements Listener {
                     " location " + "&7(&f" +
                     clicked.getX() + "&7,&f" +
                     clicked.getY() + "&7,&f" +
-                    clicked.getZ() + "&7)" + "&b has been set!";
+                    clicked.getZ() + "&7)" + "&a has been set!";
 
             if (selection.isFullObject()) {
                 message += "&7 (&f" + selection.getCuboid().volume() + " &eblocks" +

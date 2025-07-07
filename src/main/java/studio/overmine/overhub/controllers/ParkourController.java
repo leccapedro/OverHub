@@ -1,18 +1,17 @@
 package studio.overmine.overhub.controllers;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.particles.XParticle;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
 import studio.overmine.overhub.models.parkour.ParkourSelection;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
-import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 import studio.overmine.overhub.utilities.SerializeUtil;
@@ -30,8 +29,8 @@ public class ParkourController {
     private Cuboid cuboid;
     private final ThreadLocalRandom random;
     private static final char[] DIRECTIONS = {'N', 'S', 'E', 'W'};
-    private static final int[] HEIGHT_VARIATIONS = {-1, 0, 1};
     private static final double EXPLOSION_RADIUS = 0.7;
+    private static final int[] HEIGHT_VARIATIONS = {-1, 0, 1};
 
     public ParkourController(OverHub plugin) {
         this.plugin = plugin;
@@ -39,21 +38,24 @@ public class ParkourController {
         this.parkourConfig = plugin.getFileConfig("parkour");
         this.parkours = new HashMap<>();
         this.random = ThreadLocalRandom.current();
+        this.loadOrRefresh();
     }
 
     public void loadOrRefresh() {
-        Location l1 = SerializeUtil.deserializeLocation(parkourConfig.getString("cuboid.higher"));
-        Location l2 = SerializeUtil.deserializeLocation(parkourConfig.getString("cuboid.lower"));
-        if (l1 != null && l2 != null) this.cuboid = new Cuboid(l1, l2);
+        try {
+            this.cuboid = SerializeUtil.deserializeCuboid(parkourConfig.getString("parkour"));
+            onDisable();
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error load Parkour: " + e.getMessage());
+        }
     }
 
     public void setCuboid(Player player) {
         ParkourSelection selection = ParkourSelection.createOrGetSelection(plugin, player);
         if (selection.isFullObject()) {
             this.cuboid = selection.getCuboid();
-            ChatUtil.sendMessage(player, "&aParkour cuboid has been updated!");
-            parkourConfig.getConfiguration().set("parkour.cuboid.higher", SerializeUtil.serializeLocation(cuboid.getUpperCorner()));
-            parkourConfig.getConfiguration().set("parkour.cuboid.lower", SerializeUtil.serializeLocation(cuboid.getLowerCorner()));
+            ChatUtil.sendMessage(player, "&aParkour area has been updated!");
+            parkourConfig.getConfiguration().set("parkour", SerializeUtil.serializeCuboid(cuboid));
             parkourConfig.save();
             parkourConfig.reload();
             selection.clear();
@@ -62,22 +64,20 @@ public class ParkourController {
         }
     }
 
-    public void startParkourPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
-        if (parkours.containsKey(uuid)) {
-            ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_ALREADY);
-            return;
-        }
+    public void startParkour(Player player) {
+        parkours.put(player.getUniqueId(), new ParkourPlayer(plugin, player));
+        getParkour(player).start();
+    }
 
-        parkours.put(uuid, new ParkourPlayer(plugin));
-        Bukkit.getScheduler().runTask(plugin, () -> parkours.get(uuid).start(player));
-        ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_START
-                .replace("%score%", String.valueOf(userController.getUser(uuid).getParkourScore())));
+    public ParkourPlayer getParkour(Player player) {
+        return parkours.get(player.getUniqueId());
     }
 
     public void stopParkour(Player player) {
         ParkourPlayer parkour = parkours.remove(player.getUniqueId());
-        if (parkour != null) parkour.stop();
+        if (parkour != null) {
+            parkour.stop();
+        }
     }
 
     public void onDisable() {
@@ -85,105 +85,119 @@ public class ParkourController {
         parkours.clear();
     }
 
-    public void placeBlockAt(Location location) {
-        World world = location.getWorld();
-        if (world == null) return;
+    public Location findStartingPoint() {
+        World world = plugin.getServer().getWorld(cuboid.getWorld().getName());
+        if (world == null) {
+            plugin.getLogger().warning("Parkour cuboid world not found.");
+            return null;
+        }
 
-        List<Material> blockMaterials = ConfigResource.PARKOUR_GENERATOR_BLOCKS;
-        Material blockType = blockMaterials.get(random.nextInt(blockMaterials.size()));
-        world.getBlockAt(location).setType(blockType);
-        spawnExplosionEffect(location, 1);
+        int x = random.nextInt(cuboid.getLowerX(), cuboid.getUpperX() + 1);
+        int y = random.nextInt(cuboid.getLowerY(), cuboid.getUpperY() - 2);
+        int z = random.nextInt(cuboid.getLowerZ(), cuboid.getUpperZ() + 1);
+
+        return new Location(world, x, y, z);
     }
 
-    public Location generateNextBlock(Location previousBlock) {
+    public Location generateNextBlock(Location previousBlock, List<Location> activeBlocks,
+                                      int minDistance, int maxDistance) {
         World world = previousBlock.getWorld();
+        if (world == null) return null;
+
         int x = previousBlock.getBlockX();
         int y = previousBlock.getBlockY();
         int z = previousBlock.getBlockZ();
 
         int minX = cuboid.getLowerX(), maxX = cuboid.getUpperX();
-        int minZ = cuboid.getLowerZ(), maxZ = cuboid.getUpperZ();
         int minY = cuboid.getLowerY(), maxY = cuboid.getUpperY();
-        double minDistSquared = Math.pow(ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN, 2);
+        int minZ = cuboid.getLowerZ(), maxZ = cuboid.getUpperZ();
 
-        int maxAttempts = ConfigResource.PARKOUR_GENERATOR_ATTEMPTS;
-        int distance = getRandomDistance(random);
-        int newX = x, newZ = z;
+        int maxAttempts = ConfigResource.PARKOUR_SYSTEM_GENERATOR_ATTEMPTS;
 
-        for (int attempt = 0; attempt < maxAttempts; attempt++) {
-            switch (DIRECTIONS[random.nextInt(DIRECTIONS.length)]) {
-                case 'N':
-                    newZ -= distance;
-                    break;
-                case 'S':
-                    newZ += distance;
-                    break;
-                case 'E':
-                    newX += distance;
-                    break;
-                case 'W':
-                    newX -= distance;
-                    break;
-            }
-
-            newX = clamp(newX, minX, maxX);
-            newZ = clamp(newZ, minZ, maxZ);
-            int newY = clamp(y + HEIGHT_VARIATIONS[random.nextInt(HEIGHT_VARIATIONS.length)], minY, maxY);
-
-            if (isValidPlacement(world, newX, newY, newZ) && distanceSquared(x, z, newX, newZ) >= minDistSquared) {
-                return new Location(world, newX, newY, newZ);
-            }
+        Location directionCheckBlock1 = null;
+        Location directionCheckBlock2 = null;
+        if (activeBlocks.size() >= 2) {
+            directionCheckBlock1 = activeBlocks.get(activeBlocks.size() - 2);
+            directionCheckBlock2 = activeBlocks.get(activeBlocks.size() - 1);
         }
 
-        System.out.println("&c[ParkourCube] No valid location found after multiple attempts...");
-        return previousBlock;
-    }
-
-    public Location findValidStartingPoint() {
-        World world = cuboid.getWorld();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int maxAttempts = ConfigResource.PARKOUR_GENERATOR_ATTEMPTS;
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
-            int x = random.nextInt(cuboid.getLowerX(), cuboid.getUpperX() + 1);
-            int y = random.nextInt(cuboid.getLowerY(), cuboid.getUpperY() + 1);
-            int z = random.nextInt(cuboid.getLowerZ(), cuboid.getUpperZ() + 1);
+            char direction = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
+            int distance = minDistance + random.nextInt(maxDistance - minDistance + 1);
 
-            if (isValidPlacement(world, x, y, z)) {
-                return new Location(world, x, y, z);
+            int newX = x, newZ = z;
+            switch (direction) {
+                case 'N': newZ -= distance; break;
+                case 'S': newZ += distance; break;
+                case 'E': newX += distance; break;
+                case 'W': newX -= distance; break;
             }
+
+            int newY = y + HEIGHT_VARIATIONS[random.nextInt(HEIGHT_VARIATIONS.length)];
+
+            if (newX < minX || newX > maxX || newY < minY || newY > maxY || newZ < minZ || newZ > maxZ) continue;
+
+            Location candidate = new Location(world, newX, newY, newZ);
+
+            boolean noValid = activeBlocks.stream().anyMatch(loc ->
+                    loc.getBlockX() == candidate.getBlockX() &&
+                            loc.getBlockZ() == candidate.getBlockZ()
+            );
+            if (noValid) continue;
+
+            if (directionCheckBlock1 != null && directionCheckBlock2 != null) {
+                boolean between = isBetween(directionCheckBlock1, directionCheckBlock2, candidate);
+
+                if (between) continue;
+
+            }
+
+            return candidate;
         }
+
+        plugin.getLogger().warning("A valid location was not found after " + maxAttempts + " attempts.");
         return null;
     }
 
-    private int getRandomDistance(ThreadLocalRandom random) {
-        return ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN +
-                random.nextInt(ConfigResource.PARKOUR_GENERATOR_DISTANCE_MAX - ConfigResource.PARKOUR_GENERATOR_DISTANCE_MIN + 1);
+    private static boolean isBetween(Location directionCheckBlock1, Location directionCheckBlock2, Location candidate) {
+        int x1 = directionCheckBlock1.getBlockX();
+        int z1 = directionCheckBlock1.getBlockZ();
+        int x2 = directionCheckBlock2.getBlockX();
+        int z2 = directionCheckBlock2.getBlockZ();
+
+        int xC = candidate.getBlockX();
+        int zC = candidate.getBlockZ();
+
+        boolean isBetween = false;
+
+        if (x1 == x2 && xC == x1) {
+            if ((z1 < zC && zC < z2) || (z2 < zC && zC < z1)) {
+                isBetween = true;
+            }
+        }
+
+        else if (z1 == z2 && zC == z1) {
+            if ((x1 < xC && xC < x2) || (x2 < xC && xC < x1)) {
+                isBetween = true;
+            }
+        }
+        return isBetween;
     }
 
-    private int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(value, max));
+    public void placeBlock(Location location, Player player, List<Material> materials) {
+        Material blockType = materials.get(random.nextInt(materials.size()));
+
+        player.sendBlockChange(location, blockType.createBlockData());
+
+        spawnExplosionEffect(location);
     }
 
-    private boolean isValidPlacement(World world, int x, int y, int z) {
-        return world != null && world.getChunkAt(x >> 4, z >> 4).isLoaded() &&
-                world.getBlockAt(x, y, z).getType() == Material.AIR &&
-                world.getBlockAt(x, y + 1, z).getType() == Material.AIR &&
-                world.getBlockAt(x, y + 2, z).getType() == Material.AIR &&
-                world.getBlockAt(x, y - 1, z).getType() == Material.AIR &&
-                world.getBlockAt(x, y - 2, z).getType() == Material.AIR;
-    }
-
-    private double distanceSquared(int x1, int z1, int x2, int z2) {
-        return Math.pow(x2 - x1, 2) + Math.pow(z2 - z1, 2);
-    }
-
-
-    private void spawnExplosionEffect(Location location, int count) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int effectiveCount = Math.max(6, count);
+    private void spawnExplosionEffect(Location location) {
+        World world = location.getWorld();
+        if (world == null) return;
         Location particleLoc = location.clone().add(0.5, 0.5, 0.5);
 
-        for (int i = 0; i < effectiveCount; i++) {
+        for (int i = 0; i < 6; i++) {
             double theta = random.nextDouble() * 2 * Math.PI;
             double phi = Math.acos(2 * random.nextDouble() - 1);
             double x = EXPLOSION_RADIUS * Math.sin(phi) * Math.cos(theta);
@@ -191,8 +205,9 @@ public class ParkourController {
             double z = EXPLOSION_RADIUS * Math.cos(phi);
 
             particleLoc.add(x, y, z);
-            location.getWorld().spawnParticle(XParticle.FLAME.get(), particleLoc, 3, 0.15, 0.15, 0.15, 3);
+            world.spawnParticle(XParticle.CLOUD.get(), location, 1, 0.1, 0.1, 0.1, 0.5);
             particleLoc.subtract(x, y, z);
         }
     }
+
 }

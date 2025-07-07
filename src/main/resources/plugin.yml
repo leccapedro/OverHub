@@ -14,4 +14,7 @@ commands:
   setspawn:
     permission: "overhub.command.setspawn"
     description: "Set spawn command"
+  parkour:
+    permission: "overhub.command.parkour"
+    description: "Parkour command"
 

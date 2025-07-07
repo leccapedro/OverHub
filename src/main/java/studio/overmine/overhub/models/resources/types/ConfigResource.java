@@ -23,10 +23,11 @@ public class ConfigResource extends Resource {
     public static ItemStack HUB_SWORD_SYSTEM_SWORD;
     public static ItemStack[] HUB_SWORD_SYSTEM_EQUIPMENT;
     public static boolean BOSS_BAR_SYSTEM_ENABLED;
-    public static List<String> PARKOUR_STREAK_COMMANDS;
-    public static int PARKOUR_STREAK_STREAK_INTERVAL;
-    public static int PARKOUR_GENERATOR_ATTEMPTS, PARKOUR_GENERATOR_DISTANCE_MIN, PARKOUR_GENERATOR_DISTANCE_MAX;
-    public static List<Material> PARKOUR_GENERATOR_BLOCKS;
+    public static boolean PARKOUR_SYSTEM_ENABLED;
+    public static List<String> PARKOUR_SYSTEM_STREAK_COMMANDS;
+    public static int PARKOUR_SYSTEM_STREAK_INTERVAL, PARKOUR_SYSTEM_GENERATOR_ATTEMPTS, PARKOUR_SYSTEM_GENERATOR_DISTANCE_MIN,
+            PARKOUR_SYSTEM_GENERATOR_DISTANCE_MAX;
+    public static List<Material> PARKOUR_SYSTEM_GENERATOR_BLOCKS;
 
     public ConfigResource(OverHub plugin) {
         super(plugin);
@@ -51,19 +52,20 @@ public class ConfigResource extends Resource {
                 configFile.getItemStack("hub-sword-system.equipment.helmet")
         };
         BOSS_BAR_SYSTEM_ENABLED = configFile.getBoolean("boss-bar-system.enabled");
-        PARKOUR_STREAK_COMMANDS = configFile.getStringList("parkour-system.streak.commands");
-        PARKOUR_STREAK_STREAK_INTERVAL = configFile.getInt("parkour-system.streak.points-interval");
-        PARKOUR_GENERATOR_ATTEMPTS = configFile.getInt("parkour-system.generator.attempts");
-        PARKOUR_GENERATOR_DISTANCE_MIN = configFile.getInt("parkour-system.generator.distance.min");
-        PARKOUR_GENERATOR_DISTANCE_MAX = configFile.getInt("parkour-system.generator.distance.max");
-        PARKOUR_GENERATOR_BLOCKS = new ArrayList<>();
+        PARKOUR_SYSTEM_ENABLED = configFile.getBoolean("parkour-system.enabled");
+        PARKOUR_SYSTEM_STREAK_COMMANDS = configFile.getStringList("parkour-system.streak.commands");
+        PARKOUR_SYSTEM_STREAK_INTERVAL = configFile.getInt("parkour-system.streak.points-intervals");
+        PARKOUR_SYSTEM_GENERATOR_ATTEMPTS = configFile.getInt("parkour-system.generator.attempts");
+        PARKOUR_SYSTEM_GENERATOR_DISTANCE_MIN = configFile.getInt("parkour-system.generator.min-distance");
+        PARKOUR_SYSTEM_GENERATOR_DISTANCE_MAX = configFile.getInt("parkour-system.generator.max-distance");
+        PARKOUR_SYSTEM_GENERATOR_BLOCKS = new ArrayList<>();
         for (String blockName : configFile.getStringList("parkour-system.generator.block-materials")) {
             Optional<XMaterial> material = XMaterial.matchXMaterial(blockName);
             if (!material.isPresent()) {
                 Bukkit.getLogger().warning("Invalid block name: " + blockName);
                 continue;
             }
-            PARKOUR_GENERATOR_BLOCKS.add(material.get().parseMaterial());
+            PARKOUR_SYSTEM_GENERATOR_BLOCKS.add(material.get().parseMaterial());
         }
     }
 }

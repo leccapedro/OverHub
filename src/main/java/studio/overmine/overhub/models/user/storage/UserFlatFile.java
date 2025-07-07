@@ -39,7 +39,7 @@ public class UserFlatFile implements IUser {
     public void loadUser(User user, ConfigurationSection section) {
         user.setName(section.getString("name"));
         user.setVisibilityType(VisibilityType.valueOf(section.getString("visibility")));
-        user.setParkourScore(section.getInt("parkourScore"));
+        user.setParkourHS(section.getInt("parkourScore"));
     }
 
     public void toSavable(User user) {
@@ -48,7 +48,7 @@ public class UserFlatFile implements IUser {
 
         section.set("name", user.getName());
         section.set("visibility", user.getVisibilityType().name());
-        section.set("parkour-score", user.getParkourScore());
+        section.set("parkour-score", user.getParkourHS());
 
         userDataFile.save();
     }

@@ -13,9 +13,9 @@ combat-sword-message:
   un-equipped: "&4&lLOBBY &8» &fYour pvp mode has been &cdisabled&f."
 
 parkour-message:
-  start: "&4&lPARKOUR &8» &7Try to get over your high-score of &b<score>&7!"
-  already: "&4&lPARKOUR &8» &cYou already have a parkour in progress!"
-  streak: "&4&lPARKOUR &8» &7You are on a &b<score> &7point streak!"
-  fall: "&4&lPARKOUR &8» &cYou fell from parkour! &7Your score: &b<score>"
-  new-high-score: "&4&lPARKOUR &8» &aCongratulations! &7You have achieved a new high-score &b<score> &7points."
+  start: "&4&lPARKOUR &8» &7Try to get over your high-score of &b%score%&7!"
+  streak: "&4&lPARKOUR &8» &7You are on a &b%score% &7point streak!"
+  fall: "&4&lPARKOUR &8» &cYou fell from parkour! &7Your score: &b%score%"
+  new-high-score: "&4&lPARKOUR &8» &aCongratulations! &7You have achieved a new high-score &b%score% &7points."
+  error: "&4&lPARKOUR &8» &cParkour could not be continued."
   area-not-defined: "&4&lPARKOUR &8» &cParkour area is not defined."

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
+import studio.overmine.overhub.commands.parkour.ParkourCommand;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
@@ -50,6 +51,7 @@ public class OverHub extends JavaPlugin {
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
+        this.fileConfigs.put("parkour", new FileConfig(this, "parkour.yml"));
 
         this.resourceController = new ResourceController(this);
         this.userController = new UserController(this);
@@ -59,7 +61,7 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
-        this.parkourController = new ParkourController(this);
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) this.parkourController = new ParkourController(this);
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
@@ -81,6 +83,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new CombatListener(this, combatController), this);
         if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) pluginManager.registerEvents(new BossBarListener(bossBarController), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) pluginManager.registerEvents(new ParkourListener(this), this);
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -88,6 +91,7 @@ public class OverHub extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("overhub")).setTabCompleter(new OverHubCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(spawnController));
         Objects.requireNonNull(this.getCommand("setspawn")).setExecutor(new SetSpawnCommand(spawnController));
+        if (parkourController != null) Objects.requireNonNull(this.getCommand("parkour")).setExecutor(new ParkourCommand(parkourController));
 
         Bukkit.getScheduler().runTaskLater(this, () ->
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
@@ -96,6 +100,7 @@ public class OverHub extends JavaPlugin {
     @Override
     public void onDisable() {
         if (this.fastBoardController != null) this.fastBoardController.onDisable();
+        if (this.parkourController != null) this.parkourController.onDisable();
     }
 
     public void onReload() {
@@ -106,6 +111,7 @@ public class OverHub extends JavaPlugin {
         this.lobbySelectorController.onReload();
         if (this.bossBarController != null) this.bossBarController.onReload();
         if (this.fastBoardController != null) this.fastBoardController.onReload();
+        if (this.parkourController != null) this.parkourController.loadOrRefresh();
     }
 
     public FileConfig getFileConfig(String name) {
