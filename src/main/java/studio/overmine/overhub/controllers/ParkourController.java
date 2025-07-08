@@ -1,13 +1,16 @@
 package studio.overmine.overhub.controllers;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
 import studio.overmine.overhub.models.parkour.ParkourSelection;
@@ -186,8 +189,15 @@ public class ParkourController {
 
     public void placeBlock(Location location, Player player, List<Material> materials) {
         Material blockType = materials.get(random.nextInt(materials.size()));
-
-        player.sendBlockChange(location, blockType.createBlockData());
+        int block = XMaterial.matchXMaterial(blockType).getId();
+        System.out.println(block);
+        System.out.println(blockType.name());
+        WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(
+                new Vector3i(
+                        location.getBlockX(),
+                        location.getBlockY(),
+                        location.getBlockZ()), 1);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, blockChange);
 
         spawnExplosionEffect(location);
     }
@@ -205,7 +215,12 @@ public class ParkourController {
             double z = EXPLOSION_RADIUS * Math.cos(phi);
 
             particleLoc.add(x, y, z);
-            world.spawnParticle(XParticle.CLOUD.get(), location, 1, 0.1, 0.1, 0.1, 0.5);
+            if (OverHub.getVersion() <= 8) {
+                world.playEffect(location, Effect.valueOf(particleName), 5);
+            }
+            else {
+                world.spawnParticle(XParticle.CLOUD.get(), location, 1, 0.1, 0.1, 0.1, 0.5);
+            }
             particleLoc.subtract(x, y, z);
         }
     }

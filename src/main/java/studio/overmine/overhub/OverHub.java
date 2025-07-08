@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.Bukkit;
 import studio.overmine.overhub.commands.parkour.ParkourCommand;
 import studio.overmine.overhub.controllers.*;
@@ -40,10 +42,14 @@ public class OverHub extends JavaPlugin {
     public void onLoad() {
         version = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]
                 .split("-")[0]);
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        //On Bukkit, calling this here is essential, hence the name "load"
+        PacketEvents.getAPI().load();
     }
 
     @Override
     public void onEnable() {
+        PacketEvents.getAPI().init();
         this.fileConfigs = new HashMap<>();
         this.fileConfigs.put("config", new FileConfig(this, "config.yml"));
         this.fileConfigs.put("language", new FileConfig(this, "language.yml"));
@@ -99,6 +105,7 @@ public class OverHub extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        PacketEvents.getAPI().terminate();
         if (this.fastBoardController != null) this.fastBoardController.onDisable();
         if (this.parkourController != null) this.parkourController.onDisable();
     }

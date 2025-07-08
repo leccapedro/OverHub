@@ -1,6 +1,10 @@
 package studio.overmine.overhub.models.parkour;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -88,9 +92,14 @@ public class ParkourPlayer {
     }
 
     public void stop() {
-        for (Location loc : activeBlocks)
-            player.sendBlockChange(loc, Material.AIR.createBlockData());
-
+        for (Location loc : activeBlocks) {
+            WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(
+                    new Vector3i(
+                            loc.getBlockX(),
+                            loc.getBlockY(),
+                            loc.getBlockZ()), 0);
+            PacketEvents.getAPI().getPlayerManager().sendPacket(player, blockChange);
+        }
         activeBlocks.clear();
     }
 
