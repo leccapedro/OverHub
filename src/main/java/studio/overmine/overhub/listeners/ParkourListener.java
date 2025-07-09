@@ -1,16 +1,6 @@
 package studio.overmine.overhub.listeners;
 
-import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.event.PacketListener;
-import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.User;
-import com.github.retrooper.packetevents.util.Vector3i;
-import com.github.retrooper.packetevents.wrapper.play.client.*;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockAction;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -30,7 +20,7 @@ import studio.overmine.overhub.models.parkour.ParkourSelection;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 
-public class ParkourListener implements Listener, PacketListener {
+public class ParkourListener implements Listener {
     private final OverHub plugin;
     private final ParkourController parkourController;
     private final UserController userController;
@@ -86,36 +76,6 @@ public class ParkourListener implements Listener, PacketListener {
             parkour.advance();
         }
     }
-
-//    @Override
-//    public void onPacketReceive(PacketReceiveEvent event) {
-//        Player player = event.getPlayer();
-//        ParkourPlayer parkourPlayer = plugin.getParkourController().getParkour(player);
-//
-//        // Si el jugador no está en parkour, ignora el paquete
-//        if (parkourPlayer == null) return;
-//
-//        // Detecta si el jugador intenta romper un bloque (LEFT_CLICK/BLOCK_DIG)
-//        if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
-//            WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
-//
-//            // Obtiene la posición del bloque clickeado
-//            Vector3i blockPos = packet.getBlockPosition();
-//            Location clickedLoc = new Location(
-//                    player.getWorld(),
-//                    blockPos.getX(),
-//                    blockPos.getY(),
-//                    blockPos.getZ()
-//            );
-//
-//            System.out.println("risas");
-//            // Verifica si el bloque está en activeBlocks
-//            if (parkourPlayer.getActiveBlocks().stream()
-//                    .anyMatch(loc -> loc.equals(clickedLoc))) {
-//                event.setCancelled(true);
-//            }
-//        }
-//    }
 
     @EventHandler(ignoreCancelled = true)
     public void onWandInteract(PlayerInteractEvent event) {

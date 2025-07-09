@@ -7,9 +7,7 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import lombok.Getter;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
@@ -187,19 +185,27 @@ public class ParkourController {
         return isBetween;
     }
 
-    public void placeBlock(Location location, Player player, List<Material> materials) {
-        Material blockType = materials.get(random.nextInt(materials.size()));
-        int block = XMaterial.matchXMaterial(blockType).getId();
-        System.out.println(block);
-        System.out.println(blockType.name());
-        WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(
-                new Vector3i(
-                        location.getBlockX(),
-                        location.getBlockY(),
-                        location.getBlockZ()), 1);
+    public void handleBlockClick(Player player, Location clickedLoc) {
+        ParkourPlayer parkourPlayer = getParkour(player);
+        if (parkourPlayer == null) return;
+
+        placeBlock(clickedLoc, player, false);
+    }
+
+    public void placeBlock(Location location, Player player, boolean advance) {
+        Material blockType = ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.get(
+                random.nextInt(ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.size()));
+
+        WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(new Vector3i(
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()), 1
+        );
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, blockChange);
 
-        spawnExplosionEffect(location);
+        if (advance) {
+            spawnExplosionEffect(location);
+        }
     }
 
     private void spawnExplosionEffect(Location location) {
@@ -216,7 +222,7 @@ public class ParkourController {
 
             particleLoc.add(x, y, z);
             if (OverHub.getVersion() <= 8) {
-                world.playEffect(location, Effect.valueOf(particleName), 5);
+                world.playEffect(location, Effect.valueOf("CLOUD"), 5);
             }
             else {
                 world.spawnParticle(XParticle.CLOUD.get(), location, 1, 0.1, 0.1, 0.1, 0.5);

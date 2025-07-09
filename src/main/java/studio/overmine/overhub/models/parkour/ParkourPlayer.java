@@ -61,7 +61,7 @@ public class ParkourPlayer {
         }
 
         activeBlocks.add(startLocation);
-        parkourController.placeBlock(startLocation, player, ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS);
+        parkourController.placeBlock(startLocation, player, true);
 
         for (int i = 0; i < 2; i++) if (!generateAndPlaceNextBlock()) return;
 
@@ -124,7 +124,7 @@ public class ParkourPlayer {
         }
 
         activeBlocks.add(nextBlock);
-        parkourController.placeBlock(nextBlock, player, ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS);
+        parkourController.placeBlock(nextBlock, player, true);
         return true;
     }
 

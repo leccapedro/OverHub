@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.Bukkit;
 import studio.overmine.overhub.commands.parkour.ParkourCommand;
@@ -43,13 +44,11 @@ public class OverHub extends JavaPlugin {
         version = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]
                 .split("-")[0]);
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        //On Bukkit, calling this here is essential, hence the name "load"
         PacketEvents.getAPI().load();
     }
 
     @Override
     public void onEnable() {
-        PacketEvents.getAPI().init();
         this.fileConfigs = new HashMap<>();
         this.fileConfigs.put("config", new FileConfig(this, "config.yml"));
         this.fileConfigs.put("language", new FileConfig(this, "language.yml"));
@@ -67,7 +66,13 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
-        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) this.parkourController = new ParkourController(this);
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) {
+            this.parkourController = new ParkourController(this);
+            PacketEvents.getAPI().getEventManager().registerListener(
+                    new PacketEventsListener(parkourController),
+                    PacketListenerPriority.NORMAL
+            );
+        }
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
@@ -90,7 +95,6 @@ public class OverHub extends JavaPlugin {
         if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) pluginManager.registerEvents(new BossBarListener(bossBarController), this);
         if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
         if (ConfigResource.PARKOUR_SYSTEM_ENABLED) pluginManager.registerEvents(new ParkourListener(this), this);
-
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         Objects.requireNonNull(this.getCommand("overhub")).setExecutor(new OverHubCommand(this));
@@ -101,6 +105,7 @@ public class OverHub extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskLater(this, () ->
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
+        PacketEvents.getAPI().init();
     }
 
     @Override
