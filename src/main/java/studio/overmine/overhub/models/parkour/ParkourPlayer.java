@@ -1,6 +1,5 @@
 package studio.overmine.overhub.models.parkour;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.util.Vector3i;
@@ -8,7 +7,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBl
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import studio.overmine.overhub.OverHub;
@@ -78,10 +76,17 @@ public class ParkourPlayer {
     public void advance() {
         score++;
         Location oldestBlock = activeBlocks.remove(0);
-        player.sendBlockChange(oldestBlock, Material.AIR.createBlockData());
+        Vector3i blockPos = new Vector3i(
+                oldestBlock.getBlockX(),
+                oldestBlock.getBlockY(),
+                oldestBlock.getBlockZ()
+        );
+
+        WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(blockPos, 0);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
 
         if (generateAndPlaceNextBlock()) {
-            player.playSound(player.getLocation(), XSound.ENTITY_CHICKEN_EGG.parseSound(), 0.5f, 1.0f);
+            XSound.ENTITY_CHICKEN_EGG.play(player, 0.5F, 1.0F);
             if (score % ConfigResource.PARKOUR_SYSTEM_STREAK_INTERVAL == 0) {
                 ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_STREAK.replace("%score%", String.valueOf(score)));
                 if (!ConfigResource.PARKOUR_SYSTEM_STREAK_COMMANDS.isEmpty())

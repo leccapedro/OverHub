@@ -199,41 +199,37 @@ public class ParkourController {
                 random.nextInt(ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.size())
         );
 
-        // Obtener la versión del servidor o cliente
-        ClientVersion version = PacketEvents.getAPI().getServerManager().getVersion().toClientVersion();
-
+        int blockId;
         // Obtener el tipo de bloque como StateType (PacketEvents)
-        StateType stateType = StateTypes.getByName(blockType.getKey().getKey()); // sin "minecraft:"
+        if (OverHub.getVersion() >= 13) {
+            StateType stateType = StateTypes.getByName(blockType.getKey().getKey()); // sin "minecraft:"
 
-        if (stateType == null) {
-            Bukkit.getLogger().warning("[Parkour] Bloque no válido en la versión actual: " + blockType);
-            return;
+            if (stateType == null) {
+                Bukkit.getLogger().warning("[Parkour] Bloque no válido en la versión actual: " + blockType);
+                return;
+            }
+            // Obtener el estado por defecto del bloque
+            WrappedBlockState blockState = WrappedBlockState.getDefaultState(stateType);
+            blockId = blockState.getGlobalId();
+        } else {
+            XMaterial xmat = XMaterial.matchXMaterial(blockType);
+            int legacyId = xmat.getId();   // Ej: 46 para TNT
+            int legacyData = xmat.getData(); // Ej: 0
+
+            blockId = legacyId | (legacyData << 12);
+
+            System.out.println(blockType.name());
+            System.out.println("ID: " + legacyId + ", DATA: " + legacyData + ", BlockID final: " + blockId);
         }
 
-        // Obtener el estado por defecto del bloque
-        WrappedBlockState blockState = WrappedBlockState.getDefaultState(version, stateType);
-
-        // Verificar que no sea AIR (fallo silencioso)
-        if (blockState == WrappedBlockState.getByGlobalId(0)) {
-            Bukkit.getLogger().warning("[Parkour] Estado nulo o AIR para: " + blockType);
-            return;
-        }
-
-        int blockId = blockState.getGlobalId();
-
-        Vector3i blockPos = new Vector3i(
+        WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(new Vector3i(
                 location.getBlockX(),
                 location.getBlockY(),
-                location.getBlockZ()
-        );
-
-        WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(blockPos, blockId);
+                location.getBlockZ()), 1);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
 
         spawnExplosionEffect(location);
     }
-
-
 
     private void spawnExplosionEffect(Location location) {
         World world = location.getWorld();
@@ -257,5 +253,4 @@ public class ParkourController {
             particleLoc.subtract(x, y, z);
         }
     }
-
 }
