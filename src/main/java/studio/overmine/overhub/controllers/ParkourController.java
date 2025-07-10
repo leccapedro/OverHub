@@ -4,10 +4,19 @@ import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityType;
+import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityTypes;
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import lombok.Getter;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
@@ -185,28 +194,46 @@ public class ParkourController {
         return isBetween;
     }
 
-    public void handleBlockClick(Player player, Location clickedLoc) {
-        ParkourPlayer parkourPlayer = getParkour(player);
-        if (parkourPlayer == null) return;
-
-        placeBlock(clickedLoc, player, false);
-    }
-
-    public void placeBlock(Location location, Player player, boolean advance) {
+    public void placeBlock(Location location, Player player) {
         Material blockType = ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.get(
-                random.nextInt(ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.size()));
+                random.nextInt(ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.size())
+        );
 
-        WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(new Vector3i(
+        // Obtener la versión del servidor o cliente
+        ClientVersion version = PacketEvents.getAPI().getServerManager().getVersion().toClientVersion();
+
+        // Obtener el tipo de bloque como StateType (PacketEvents)
+        StateType stateType = StateTypes.getByName(blockType.getKey().getKey()); // sin "minecraft:"
+
+        if (stateType == null) {
+            Bukkit.getLogger().warning("[Parkour] Bloque no válido en la versión actual: " + blockType);
+            return;
+        }
+
+        // Obtener el estado por defecto del bloque
+        WrappedBlockState blockState = WrappedBlockState.getDefaultState(version, stateType);
+
+        // Verificar que no sea AIR (fallo silencioso)
+        if (blockState == WrappedBlockState.getByGlobalId(0)) {
+            Bukkit.getLogger().warning("[Parkour] Estado nulo o AIR para: " + blockType);
+            return;
+        }
+
+        int blockId = blockState.getGlobalId();
+
+        Vector3i blockPos = new Vector3i(
                 location.getBlockX(),
                 location.getBlockY(),
-                location.getBlockZ()), 1
+                location.getBlockZ()
         );
-        PacketEvents.getAPI().getPlayerManager().sendPacket(player, blockChange);
 
-        if (advance) {
-            spawnExplosionEffect(location);
-        }
+        WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(blockPos, blockId);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
+
+        spawnExplosionEffect(location);
     }
+
+
 
     private void spawnExplosionEffect(Location location) {
         World world = location.getWorld();

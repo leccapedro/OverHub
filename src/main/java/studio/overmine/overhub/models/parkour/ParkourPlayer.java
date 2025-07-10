@@ -61,7 +61,7 @@ public class ParkourPlayer {
         }
 
         activeBlocks.add(startLocation);
-        parkourController.placeBlock(startLocation, player, true);
+        parkourController.placeBlock(startLocation, player);
 
         for (int i = 0; i < 2; i++) if (!generateAndPlaceNextBlock()) return;
 
@@ -124,7 +124,7 @@ public class ParkourPlayer {
         }
 
         activeBlocks.add(nextBlock);
-        parkourController.placeBlock(nextBlock, player, true);
+        parkourController.placeBlock(nextBlock, player);
         return true;
     }
 

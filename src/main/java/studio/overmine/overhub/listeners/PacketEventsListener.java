@@ -25,13 +25,9 @@ public class PacketEventsListener implements PacketListener {
         Player player = event.getPlayer();
         if (player == null || !player.isOnline()) return;
 
-        if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
-            handleBlockBreak(event, player);
-        }
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) handleBlockBreak(event, player);
 
-        else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
-            handleBlockInteract(event, player);
-        }
+        else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) handleBlockInteract(event, player);
     }
 
     private void handleBlockBreak(PacketReceiveEvent event, Player player) {
@@ -40,23 +36,18 @@ public class PacketEventsListener implements PacketListener {
 
         WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-        if (packet.getAction() != START_DIGGING) {
-            return;
-        }
+        if (packet.getAction() != START_DIGGING) return;
 
-        Location clickedLoc = getClickedLocation(packet.getBlockPosition(), player);
-
-        if (isParkourBlock(parkourPlayer, clickedLoc)) event.setCancelled(true);
+        if (isParkourBlock(parkourPlayer,
+                getClickedLocation(packet.getBlockPosition(), player))) event.setCancelled(true);
     }
 
     private void handleBlockInteract(PacketReceiveEvent event, Player player) {
         ParkourPlayer parkourPlayer = parkourController.getParkour(player);
         if (parkourPlayer == null) return;
-
         WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
-        Location clickedLoc = getClickedLocation(packet.getBlockPosition(), player);
-
-        if (isParkourBlock(parkourPlayer, clickedLoc)) event.setCancelled(true);
+        if (isParkourBlock(parkourPlayer,
+                getClickedLocation(packet.getBlockPosition(), player))) event.setCancelled(true);
     }
 
     private Location getClickedLocation(Vector3i position, Player player) {
