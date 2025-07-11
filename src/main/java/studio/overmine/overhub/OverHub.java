@@ -66,7 +66,8 @@ public class OverHub extends JavaPlugin {
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
-        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) {
+
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED && version >= 13) {
             this.parkourController = new ParkourController(this);
             PacketEvents.getAPI().getEventManager().registerListener(
                     new PacketEventsListener(parkourController),

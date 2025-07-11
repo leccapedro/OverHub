@@ -23,7 +23,6 @@ public class VisibilityHotbar extends Hotbar {
         this.plugin = plugin;
         this.hotbarController = hotbarController;
         this.visibilityType = visibilityType;
-
     }
 
     @Override

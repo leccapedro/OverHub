@@ -18,6 +18,7 @@ import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
 import studio.overmine.overhub.models.parkour.ParkourSelection;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
+import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ParkourListener implements Listener {
@@ -51,16 +52,26 @@ public class ParkourListener implements Listener {
 
         if (playerY < lowestBlockY - 1) {
             if (parkour.isNewHighScore(player.getUniqueId())) {
-                ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_NEW_HS.replace("%score%", String.valueOf(parkour.getScore())));
-                userController.getUser(player.getUniqueId()).setParkourHS(parkour.getScore());
+                User user = userController.getUser(player.getUniqueId());
+                user.setParkourHS(parkour.getScore());
+
+                userController.saveUser(user);
+
+                ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_NEW_HS
+                        .replace("%score%", String.valueOf(parkour.getScore())));
             }
-            else ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_FALL.replace("%score%", String.valueOf(parkour.getScore())));
+            else {
+                ChatUtil.sendMessage(player, LanguageResource.PARKOUR_MESSAGE_FALL
+                        .replace("%score%", String.valueOf(parkour.getScore())));
+            }
+
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     player.teleport(parkour.getPreviousLocation());
                 }
             }.runTask(plugin);
+
             parkourController.stopParkour(player);
             return;
         }

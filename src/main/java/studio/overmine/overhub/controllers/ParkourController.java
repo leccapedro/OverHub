@@ -1,12 +1,6 @@
 package studio.overmine.overhub.controllers;
 
-import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.particles.XParticle;
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.protocol.player.ClientVersion;
-import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityType;
-import com.github.retrooper.packetevents.protocol.world.blockentity.BlockEntityTypes;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateType;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
@@ -14,9 +8,6 @@ import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import lombok.Getter;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.parkour.ParkourPlayer;
@@ -24,6 +15,7 @@ import studio.overmine.overhub.models.parkour.ParkourSelection;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.FileConfig;
+import studio.overmine.overhub.utilities.PlayerUtil;
 import studio.overmine.overhub.utilities.SerializeUtil;
 import studio.overmine.overhub.utilities.cuboid.Cuboid;
 
@@ -32,6 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 public class ParkourController {
+
     private final OverHub plugin;
     private final FileConfig parkourConfig;
     private final UserController userController;
@@ -62,14 +55,17 @@ public class ParkourController {
 
     public void setCuboid(Player player) {
         ParkourSelection selection = ParkourSelection.createOrGetSelection(plugin, player);
+
         if (selection.isFullObject()) {
             this.cuboid = selection.getCuboid();
+
             ChatUtil.sendMessage(player, "&aParkour area has been updated!");
             parkourConfig.getConfiguration().set("parkour", SerializeUtil.serializeCuboid(cuboid));
             parkourConfig.save();
             parkourConfig.reload();
             selection.clear();
-        } else {
+        }
+        else {
             ChatUtil.sendMessage(player, "&cPlease select a valid higher and lower locations.");
         }
     }
@@ -85,6 +81,7 @@ public class ParkourController {
 
     public void stopParkour(Player player) {
         ParkourPlayer parkour = parkours.remove(player.getUniqueId());
+
         if (parkour != null) {
             parkour.stop();
         }
@@ -97,6 +94,7 @@ public class ParkourController {
 
     public Location findStartingPoint() {
         World world = plugin.getServer().getWorld(cuboid.getWorld().getName());
+
         if (world == null) {
             plugin.getLogger().warning("Parkour cuboid world not found.");
             return null;
@@ -199,33 +197,20 @@ public class ParkourController {
                 random.nextInt(ConfigResource.PARKOUR_SYSTEM_GENERATOR_BLOCKS.size())
         );
 
-        int blockId;
-        // Obtener el tipo de bloque como StateType (PacketEvents)
-        if (OverHub.getVersion() >= 13) {
-            StateType stateType = StateTypes.getByName(blockType.getKey().getKey()); // sin "minecraft:"
+        StateType stateType = StateTypes.getByName(blockType.getKey().getKey());
 
-            if (stateType == null) {
-                Bukkit.getLogger().warning("[Parkour] Bloque no válido en la versión actual: " + blockType);
-                return;
-            }
-            // Obtener el estado por defecto del bloque
-            WrappedBlockState blockState = WrappedBlockState.getDefaultState(stateType);
-            blockId = blockState.getGlobalId();
-        } else {
-            XMaterial xmat = XMaterial.matchXMaterial(blockType);
-            int legacyId = xmat.getId();   // Ej: 46 para TNT
-            int legacyData = xmat.getData(); // Ej: 0
-
-            blockId = legacyId | (legacyData << 12);
-
-            System.out.println(blockType.name());
-            System.out.println("ID: " + legacyId + ", DATA: " + legacyData + ", BlockID final: " + blockId);
+        if (stateType == null) {
+            Bukkit.getLogger().warning("[Parkour] StateType for " + blockType.name() + " not found.");
+            return;
         }
+
+        WrappedBlockState blockState = WrappedBlockState.getDefaultState(stateType);
+        int blockId = blockState.getGlobalId();
 
         WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(new Vector3i(
                 location.getBlockX(),
                 location.getBlockY(),
-                location.getBlockZ()), 1);
+                location.getBlockZ()), blockId);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
 
         spawnExplosionEffect(location);
@@ -234,7 +219,8 @@ public class ParkourController {
     private void spawnExplosionEffect(Location location) {
         World world = location.getWorld();
         if (world == null) return;
-        Location particleLoc = location.clone().add(0.5, 0.5, 0.5);
+
+        Location particleLocation = location.clone().add(0.5, 0.5, 0.5);
 
         for (int i = 0; i < 6; i++) {
             double theta = random.nextDouble() * 2 * Math.PI;
@@ -243,14 +229,10 @@ public class ParkourController {
             double y = EXPLOSION_RADIUS * Math.sin(phi) * Math.sin(theta);
             double z = EXPLOSION_RADIUS * Math.cos(phi);
 
-            particleLoc.add(x, y, z);
-            if (OverHub.getVersion() <= 8) {
-                world.playEffect(location, Effect.valueOf("CLOUD"), 5);
-            }
-            else {
-                world.spawnParticle(XParticle.CLOUD.get(), location, 1, 0.1, 0.1, 0.1, 0.5);
-            }
-            particleLoc.subtract(x, y, z);
+            particleLocation.add(x, y, z);
+            particleLocation.subtract(x, y, z);
+
+            PlayerUtil.spawnParticle(world, particleLocation, "CLOUD");
         }
     }
 }
