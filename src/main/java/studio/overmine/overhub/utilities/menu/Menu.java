@@ -6,7 +6,6 @@ import java.util.UUID;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.types.SelectorResource;
 import studio.overmine.overhub.models.selector.lobby.LobbySelector;
-import studio.overmine.overhub.utilities.menu.decoration.Decoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,6 +14,7 @@ import com.google.common.collect.Maps;
 
 import lombok.Getter;
 import lombok.Setter;
+import studio.overmine.overhub.utilities.menu.decoration.DecorationUtil;
 
 @Getter @Setter
 public abstract class Menu {
@@ -53,9 +53,7 @@ public abstract class Menu {
                 Inventory playerInventory = player.getInventory();
                 playerInventory.clear();
 
-                for (Decoration decoration : SelectorResource.LOBBY_SELECTOR_MENU_DECORATIONS) {
-                    playerInventory.setItem(decoration.getSlot(), decoration.getItemStack(player));
-                }
+                DecorationUtil.loadDecorations(player, playerInventory, SelectorResource.LOBBY_SELECTOR_MENU_DECORATIONS);
 
                 for (LobbySelector lobbySelector : plugin.getLobbySelectorController().getLobbySelectors()) {
                     playerInventory.setItem(lobbySelector.getIconSlot(), lobbySelector.getDisplayIcon(player));
@@ -68,7 +66,7 @@ public abstract class Menu {
     }
 
     public void close(Player player) {
-        plugin.getHotbarController().giveHotbar(player);
+        if (lobbies) plugin.getHotbarController().giveHotbar(player);
         menus.remove(player.getUniqueId());
     }
 

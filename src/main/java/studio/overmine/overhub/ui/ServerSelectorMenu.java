@@ -3,7 +3,6 @@ package studio.overmine.overhub.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import studio.overmine.overhub.utilities.menu.decoration.Decoration;
 import org.bukkit.entity.Player;
 
 import studio.overmine.overhub.OverHub;
@@ -14,7 +13,7 @@ import studio.overmine.overhub.ui.buttons.ServerSelectorButton;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.menu.Button;
 import studio.overmine.overhub.utilities.menu.Menu;
-import studio.overmine.overhub.utilities.menu.decoration.DecorationButton;
+import studio.overmine.overhub.utilities.menu.decoration.DecorationUtil;
 
 public class ServerSelectorMenu extends Menu {
 
@@ -22,9 +21,12 @@ public class ServerSelectorMenu extends Menu {
     private final ServerSelectorController serverSelectorController;
 
     public ServerSelectorMenu(Player player, OverHub plugin) {
-        super(plugin, player,
+        super(
+                plugin,
+                player,
                 ChatUtil.translate(SelectorResource.SERVER_SELECTOR_MENU_TITLE),
-                SelectorResource.SERVER_SELECTOR_MENU_ROWS * 9, true
+                SelectorResource.SERVER_SELECTOR_MENU_ROWS * 9,
+                SelectorResource.LOBBY_SELECTOR_MENU_MODERN
         );
         this.plugin = plugin;
         this.serverSelectorController = plugin.getServerSelectorController();
@@ -32,16 +34,14 @@ public class ServerSelectorMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        HashMap<Integer, Button> buttonMap = new HashMap<>();
+        HashMap<Integer, Button> buttons = new HashMap<>();
 
-        for (Decoration decoration : SelectorResource.SERVER_SELECTOR_MENU_DECORATIONS) {
-            buttonMap.put(decoration.getSlot(), new DecorationButton(decoration));
-        }
+        DecorationUtil.loadDecorations(buttons, SelectorResource.SERVER_SELECTOR_MENU_DECORATIONS);
 
         for (ServerSelector serverSelector : serverSelectorController.getServerSelectors()) {
-            buttonMap.put(serverSelector.getIconSlot(), new ServerSelectorButton(plugin, serverSelector));
+            buttons.put(serverSelector.getIconSlot(), new ServerSelectorButton(plugin, serverSelector));
         }
 
-        return buttonMap;
+        return buttons;
     }
 }

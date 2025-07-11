@@ -1,14 +1,40 @@
 package studio.overmine.overhub.utilities.menu.decoration;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import studio.overmine.overhub.utilities.item.ItemBuilder;
 import lombok.experimental.UtilityClass;
 import org.bukkit.configuration.ConfigurationSection;
+import studio.overmine.overhub.utilities.menu.Button;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 
 @UtilityClass
 public class DecorationUtil {
+
+    public void loadDecorations(Player player, Inventory inventory, Set<Decoration> decorations) {
+        for (Decoration decoration : decorations) {
+            try {
+                inventory.setItem(decoration.getSlot(), decoration.getItemStack(player));
+            }
+            catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to apply decoration: " + decoration.getItemStack().getType() + " at slot " + decoration.getSlot());
+            }
+        }
+    }
+
+    public void loadDecorations(HashMap<Integer, Button> buttons, Set<Decoration> decorations) {
+        for (Decoration decoration : decorations) {
+            try {
+                buttons.put(decoration.getSlot(), new DecorationButton(decoration));
+            }
+            catch (Exception e) {
+                Bukkit.getLogger().warning("Failed to apply decoration: " + decoration.getItemStack().getType() + " at slot " + decoration.getSlot());
+            }
+        }
+    }
 
     public List<Integer> getDecorationSlots(String data) {
         if (data == null || data.isEmpty()) return Collections.emptyList();

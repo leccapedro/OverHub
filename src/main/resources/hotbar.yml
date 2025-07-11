@@ -7,6 +7,14 @@ defaults:
       lore: {}
       material: "COMPASS"
       slot: 0
+  lobby-selector:
+    enabled: true
+    item:
+      head: ""
+      name: "&6&lLOBBY SELECTOR"
+      lore: {}
+      material: "NETHER_STAR"
+      slot: 1
   ender-butt:
     enabled: true
     item:

@@ -1,6 +1,9 @@
 menu:
+  title: "Lobby Selector"
+  rows: 3
+  modern: false
   decorations:
-    9-17;18;26;27-35:
+    0-8;9;17;18-26:
       head: ""
       name: "&7 "
       lore: {}
@@ -15,6 +18,6 @@ lobbies:
       lore:
         - "&7This is the lobby-1."
       material: "NETHER_STAR"
-      slot: 22
+      slot: 13
       enchanted: true
     lobby: "lobby-1"

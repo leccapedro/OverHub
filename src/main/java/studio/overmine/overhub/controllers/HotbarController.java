@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import studio.overmine.overhub.models.hotbar.types.CustomHotbar;
-import studio.overmine.overhub.models.hotbar.types.VisibilityHotbar;
+import studio.overmine.overhub.models.hotbar.types.*;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.models.user.VisibilityType;
@@ -17,8 +16,6 @@ import org.bukkit.inventory.ItemStack;
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.hotbar.Hotbar;
-import studio.overmine.overhub.models.hotbar.types.EnderButtHotbar;
-import studio.overmine.overhub.models.hotbar.types.ServerSelectorHotbar;
 import studio.overmine.overhub.utilities.FileConfig;
 import studio.overmine.overhub.utilities.item.ItemBuilder;
 
@@ -107,6 +104,7 @@ public class HotbarController {
 
         registerHotbars(
                 registerHotbar(new ServerSelectorHotbar("server-selector", plugin), defaultsSection),
+                registerHotbar(new LobbySelectorHotbar("lobby-selector", plugin), defaultsSection),
                 registerHotbar(new EnderButtHotbar("ender-butt"), defaultsSection),
                 registerHotbar(new VisibilityHotbar("visibility-all", plugin,this, VisibilityType.DONATOR), defaultsSection),
                 registerHotbar(new VisibilityHotbar("visibility-donator", plugin, this, VisibilityType.STAFF), defaultsSection),
