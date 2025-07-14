@@ -117,8 +117,10 @@ public class HotbarController {
         if (customsSection == null) throw new IllegalStateException("No customs section found in hotbar configuration.");
 
         customsSection.getKeys(false).forEach(customId -> {
-            Hotbar hotbar = registerHotbar(new CustomHotbar(customId, customsSection.getStringList(customId + ".actions")), customsSection);
-            hotbarMap.put(hotbar.getName(), hotbar);
+            if (customsSection.getBoolean(customId + ".enabled")) {
+                Hotbar hotbar = registerHotbar(new CustomHotbar(customId, customsSection.getStringList(customId + ".actions")), customsSection);
+                hotbarMap.put(hotbar.getName(), hotbar);
+            }
         });
 
         if (reload) Bukkit.getOnlinePlayers().forEach(this::giveHotbar);
