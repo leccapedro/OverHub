@@ -101,6 +101,7 @@ public class DecorationUtil {
                 .setDisplayName(section.getString(key + ".name"))
                 .setLore(section.getStringList(key + ".lore"))
                 .setEnchanted(section.getBoolean(key + ".enchanted"))
+                .setModelData(section.getInt(key + ".model-data"))
                 .build());
         decoration.setCommands(section.getStringList(key + ".commands"));
 

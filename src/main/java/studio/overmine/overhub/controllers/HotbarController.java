@@ -1,5 +1,6 @@
 package studio.overmine.overhub.controllers;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,14 +50,13 @@ public class HotbarController {
                 .orElse(null);
     }
 
-    public void updateVisibilityHotbar(Player player, VisibilityType visibilityType) {
-        User user = userController.getUser(player.getUniqueId());
+    public void updateVisibilityHotbar(User user, Player player, VisibilityType visibilityType) {
         user.setVisibilityType(visibilityType);
         user.executeCurrentVisibility();
 
         userController.saveUser(user);
 
-        Hotbar visibilityHotbar = getHotbar(user.getVisibilityType().getId());
+        Hotbar visibilityHotbar = getHotbar(visibilityType.getId());
         player.getInventory().setItem(visibilityHotbar.getItemSlot(), visibilityHotbar.getItemStack());
     }
 
@@ -75,10 +75,9 @@ public class HotbarController {
     }
 
     public void registerHotbars(Hotbar... hotbars) {
-        for (Hotbar hotbar : hotbars) {
-            if (!hotbar.isEnabled()) continue;
-            hotbarMap.put(hotbar.getName(), hotbar);
-        }
+        Arrays.stream(hotbars)
+                .filter(Hotbar::isEnabled)
+                .forEach(hotbar -> hotbarMap.put(hotbar.getName(), hotbar));
     }
 
     public void giveHotbar(Player player) {
@@ -90,15 +89,20 @@ public class HotbarController {
             inventory.setItem(hotbar.getItemSlot(), hotbar.getItemStack());
         }
 
-        inventory.setItem(ConfigResource.HUB_SWORD_SYSTEM_SLOT, ConfigResource.HUB_SWORD_SYSTEM_SWORD);
+        if (ConfigResource.HUB_SWORD_SYSTEM_ENABLED) {
+            inventory.setItem(ConfigResource.HUB_SWORD_SYSTEM_SLOT, ConfigResource.HUB_SWORD_SYSTEM_SWORD);
+        }
 
         User user = userController.getUser(player.getUniqueId());
         Hotbar visibilityHotbar = getHotbar(user.getVisibilityType().getId());
-        inventory.setItem(visibilityHotbar.getItemSlot(), visibilityHotbar.getItemStack());
+
+        if (visibilityHotbar != null) {
+            inventory.setItem(visibilityHotbar.getItemSlot(), visibilityHotbar.getItemStack());
+        }
     }
 
     public final void onReload(boolean reload) {
-        if (reload) hotbarMap.clear();
+        hotbarMap.clear();
 
         ConfigurationSection defaultsSection = hotbarFile.getConfiguration().getConfigurationSection("defaults");
         if (defaultsSection == null) throw new IllegalStateException("No defaults section found in hotbar configuration.");
@@ -107,12 +111,17 @@ public class HotbarController {
                 registerHotbar(new ServerSelectorHotbar("server-selector", plugin), defaultsSection),
                 registerHotbar(new LobbySelectorHotbar("lobby-selector", plugin), defaultsSection),
                 registerHotbar(new EnderButtHotbar("ender-butt"), defaultsSection),
-                registerHotbar(new VisibilityHotbar("visibility-all", plugin,this, VisibilityType.DONATOR), defaultsSection),
-                registerHotbar(new VisibilityHotbar("visibility-donator", plugin, this, VisibilityType.STAFF), defaultsSection),
-                registerHotbar(new VisibilityHotbar("visibility-staff", plugin,this, VisibilityType.FRIEND), defaultsSection),
-                registerHotbar(new VisibilityHotbar("visibility-friend", plugin,this, VisibilityType.NONE), defaultsSection),
-                registerHotbar(new VisibilityHotbar("visibility-none", plugin,this, VisibilityType.ALL), defaultsSection)
+                registerHotbar(new VisibilityHotbar("visibility-all", plugin, userController, this), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-donator", plugin, userController, this), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-staff", plugin, userController, this), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-friend", plugin, userController, this), defaultsSection),
+                registerHotbar(new VisibilityHotbar("visibility-none", plugin, userController, this), defaultsSection)
         );
+
+        for (VisibilityType visibilityType : VisibilityType.values()) {
+            Hotbar visibilityHotbar = getHotbar(visibilityType.getId());
+            visibilityType.setEnabled(visibilityHotbar != null && visibilityHotbar.isEnabled());
+        }
 
         ConfigurationSection customsSection = hotbarFile.getConfiguration().getConfigurationSection("customs");
         if (customsSection == null) throw new IllegalStateException("No customs section found in hotbar configuration.");

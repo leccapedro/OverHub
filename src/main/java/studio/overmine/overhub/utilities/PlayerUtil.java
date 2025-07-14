@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
-import studio.overmine.overhub.OverHub;
 
 /**
  * @author Risas
@@ -17,7 +16,7 @@ import studio.overmine.overhub.OverHub;
 public class PlayerUtil {
 
     public void spawnParticle(World world, Location location, String particleName) {
-        if (OverHub.getVersion() <= 8) {
+        if (BukkitUtil.SERVER_VERSION <= 8) {
             world.playEffect(location, Effect.valueOf(particleName), 5);
         }
         else {

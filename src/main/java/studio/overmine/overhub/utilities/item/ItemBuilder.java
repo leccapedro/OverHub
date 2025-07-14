@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
-import studio.overmine.overhub.OverHub;
+import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ItemBuilder {
@@ -168,7 +168,7 @@ public class ItemBuilder {
 
     public ItemBuilder setEnchanted(boolean enchanted) {
         if (enchanted) {
-            this.itemMeta.addEnchant(Enchantment.DURABILITY, 1, true);
+            this.itemMeta.addEnchant(Enchantment.MENDING, 1, true);
             this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
@@ -191,7 +191,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addUnbreakable() {
-        if (OverHub.getVersion() <= 12) {
+        if (BukkitUtil.SERVER_VERSION <= 12) {
             try {
                 Method method = itemMeta.getClass().getMethod("spigot");
                 method.setAccessible(true);
@@ -212,7 +212,9 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setModelData(int data) {
-        this.itemMeta.setCustomModelData(data);
+        if (BukkitUtil.SERVER_VERSION >= 13) {
+            this.itemMeta.setCustomModelData(data);
+        }
         return this;
     }
 

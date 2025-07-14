@@ -21,6 +21,7 @@ public class LobbySelector {
                 .setLore(section.getStringList("item.lore"))
                 .setSkullOwner(section.getString("item.head"))
                 .setEnchanted(section.getBoolean("item.enchanted"))
+                .setModelData(section.getInt("item.model-data"))
                 .build();
         this.iconSlot = section.getInt("item.slot");
         this.lobby = section.getString("lobby");

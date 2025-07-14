@@ -1,9 +1,11 @@
 package studio.overmine.overhub.models.hotbar.types;
 
 import studio.overmine.overhub.OverHub;
-import studio.overmine.overhub.models.user.VisibilityType;
 import studio.overmine.overhub.controllers.HotbarController;
+import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.hotbar.Hotbar;
+import studio.overmine.overhub.models.user.User;
+import studio.overmine.overhub.models.user.VisibilityType;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.cooldown.CooldownUtil;
 import org.bukkit.entity.Player;
@@ -11,18 +13,18 @@ import org.bukkit.entity.Player;
 public class VisibilityHotbar extends Hotbar {
 
     private final OverHub plugin;
+    private final UserController userController;
     private final HotbarController hotbarController;
-    private final VisibilityType visibilityType;
 
     public VisibilityHotbar(
             String name,
             OverHub plugin,
-            HotbarController hotbarController,
-            VisibilityType visibilityType) {
+            UserController userController,
+            HotbarController hotbarController) {
         super(name, false);
         this.plugin = plugin;
+        this.userController = userController;
         this.hotbarController = hotbarController;
-        this.visibilityType = visibilityType;
     }
 
     @Override
@@ -32,7 +34,10 @@ public class VisibilityHotbar extends Hotbar {
             return;
         }
 
-        hotbarController.updateVisibilityHotbar(player, visibilityType);
+        User user = userController.getUser(player.getUniqueId());
+        VisibilityType visibilityType = VisibilityType.getNext(user.getVisibilityType());
+
+        hotbarController.updateVisibilityHotbar(user, player, visibilityType);
         CooldownUtil.setCooldown(plugin, player, "visibility-hotbar", 5);
     }
 }

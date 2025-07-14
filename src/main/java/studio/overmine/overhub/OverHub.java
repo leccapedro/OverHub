@@ -20,13 +20,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import studio.overmine.overhub.commands.main.OverHubCommand;
 import studio.overmine.overhub.commands.spawn.SetSpawnCommand;
 import studio.overmine.overhub.commands.spawn.SpawnCommand;
+import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 import lombok.Getter;
 
 @Getter
 public class OverHub extends JavaPlugin {
 
-    @Getter private static int version;
     private Map<String, FileConfig> fileConfigs;
     private ResourceController resourceController;
     private UserController userController;
@@ -41,8 +41,6 @@ public class OverHub extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        version = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]
-                .split("-")[0]);
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
         PacketEvents.getAPI().load();
     }
@@ -67,8 +65,9 @@ public class OverHub extends JavaPlugin {
         this.lobbySelectorController = new LobbySelectorController(this);
         this.fastBoardController = new FastBoardController(this);
 
-        if (ConfigResource.PARKOUR_SYSTEM_ENABLED && version >= 13) {
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED && BukkitUtil.SERVER_VERSION >= 13) {
             this.parkourController = new ParkourController(this);
+
             PacketEvents.getAPI().getEventManager().registerListener(
                     new PacketEventsListener(parkourController),
                     PacketListenerPriority.NORMAL
@@ -79,7 +78,7 @@ public class OverHub extends JavaPlugin {
             this.fastBoardController = new FastBoardController(this);
             this.fastBoardController.setAdapter(new FastBoardProvider(fastBoardController));
         }
-        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) {
+        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && BukkitUtil.SERVER_VERSION >= 9) {
             this.bossBarController = new BossBarController(this, getFileConfig("config"));
         }
 
@@ -93,25 +92,38 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
         pluginManager.registerEvents(new CombatListener(this, combatController), this);
-        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && version >= 9) pluginManager.registerEvents(new BossBarListener(bossBarController), this);
-        if (ScoreboardResource.SCOREBOARD_ENABLED) pluginManager.registerEvents(new FastBoardListener(this), this);
-        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) pluginManager.registerEvents(new ParkourListener(this), this);
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && BukkitUtil.SERVER_VERSION >= 9) {
+            pluginManager.registerEvents(new BossBarListener(bossBarController), this);
+        }
+        if (ScoreboardResource.SCOREBOARD_ENABLED) {
+            pluginManager.registerEvents(new FastBoardListener(this), this);
+        }
+        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) {
+            pluginManager.registerEvents(new ParkourListener(this), this);
+        }
 
         Objects.requireNonNull(this.getCommand("overhub")).setExecutor(new OverHubCommand(this));
         Objects.requireNonNull(this.getCommand("overhub")).setTabCompleter(new OverHubCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(spawnController));
         Objects.requireNonNull(this.getCommand("setspawn")).setExecutor(new SetSpawnCommand(spawnController));
-        if (parkourController != null) Objects.requireNonNull(this.getCommand("parkour")).setExecutor(new ParkourCommand(parkourController));
+
+        if (parkourController != null) {
+            Objects.requireNonNull(this.getCommand("parkour")).setExecutor(new ParkourCommand(parkourController));
+        }
 
         Bukkit.getScheduler().runTaskLater(this, () ->
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
+
         PacketEvents.getAPI().init();
+
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     @Override
     public void onDisable() {
         PacketEvents.getAPI().terminate();
+
         if (this.fastBoardController != null) this.fastBoardController.onDisable();
         if (this.parkourController != null) this.parkourController.onDisable();
     }
