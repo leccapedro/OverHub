@@ -96,6 +96,7 @@ public class FileConfig {
                 .setLore(getStringList(path + ".lore"))
                 .addEnchantments(getConfigurationSection(path + ".enchants"))
                 .addUnbreakable()
+                .setModelData(getInt(path + ".model-data"))
                 .build();
     }
 

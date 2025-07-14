@@ -68,6 +68,7 @@ public class HotbarController {
                 .setDisplayName(section.getString(hotbarName + ".item.name"))
                 .setLore(section.getStringList(hotbarName + ".item.lore"))
                 .setSkullOwner(section.getString(hotbarName + ".item.head"))
+                .setModelData(section.getInt(hotbarName + ".item.model-data"))
                 .build());
         hotbar.setItemSlot(section.getInt(hotbarName + ".item.slot"));
         return hotbar;

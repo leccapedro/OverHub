@@ -211,6 +211,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setModelData(int data) {
+        this.itemMeta.setCustomModelData(data);
+        return this;
+    }
+
     public ItemStack build() {
         for (ItemFlag itemFlag : ItemFlag.values()) {
             this.itemMeta.addItemFlags(itemFlag);
