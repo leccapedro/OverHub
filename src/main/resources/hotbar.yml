@@ -64,7 +64,7 @@ defaults:
       material: "GRAY_DYE"
       slot: 7
 customs:
-  custom-item:
+  shop:
     enabled: true
     item:
       head: ""
@@ -74,3 +74,13 @@ customs:
       slot: 6
     actions:
       - "[MESSAGE] &2&lSTORE &8┃ &fVisit our store at &astore.example.com&f."
+  parkour:
+    enabled: true
+    item:
+      head: ""
+      name: "&9&lPARKOUR"
+      lore: {}
+      material: "FEATHER"
+      slot: 2
+    actions:
+      - "[CONSOLE_COMMAND] parkour start %player%"
