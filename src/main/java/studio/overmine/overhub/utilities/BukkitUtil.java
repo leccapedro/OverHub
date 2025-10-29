@@ -15,7 +15,13 @@ public class BukkitUtil {
     public int SERVER_VERSION;
 
     static {
-        SERVER_VERSION = Integer.parseInt(Bukkit.getBukkitVersion().split("\\.")[1]
-                .split("-")[0]);
+        String[] versionParts = Bukkit.getBukkitVersion().split("\\.");
+        if (versionParts.length > 1) {
+            String[] minorVersionParts = versionParts[1].split("-");
+            String minorVersion = minorVersionParts.length > 0 ? minorVersionParts[0] : versionParts[1];
+            SERVER_VERSION = minorVersion.isEmpty() ? 0 : Integer.parseInt(minorVersion);
+        } else {
+            SERVER_VERSION = 0;
+        }
     }
 }
