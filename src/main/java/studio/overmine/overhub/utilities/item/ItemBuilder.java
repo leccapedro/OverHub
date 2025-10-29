@@ -25,6 +25,8 @@ import studio.overmine.overhub.utilities.ChatUtil;
 
 public class ItemBuilder {
 
+    private static final Enchantment GLOW_ENCHANTMENT = resolveGlowEnchantment();
+
     private final ItemStack itemStack;
     private final ItemMeta itemMeta;
 
@@ -167,8 +169,8 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setEnchanted(boolean enchanted) {
-        if (enchanted) {
-            this.itemMeta.addEnchant(Enchantment.MENDING, 1, true);
+        if (enchanted && GLOW_ENCHANTMENT != null) {
+            this.itemMeta.addEnchant(GLOW_ENCHANTMENT, 1, true);
             this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
@@ -216,6 +218,21 @@ public class ItemBuilder {
             this.itemMeta.setCustomModelData(data);
         }
         return this;
+    }
+
+    private static Enchantment resolveGlowEnchantment() {
+        Enchantment enchantment = Enchantment.getByName("MENDING");
+
+        if (enchantment == null) {
+            enchantment = Enchantment.getByName("DURABILITY");
+        }
+
+        if (enchantment == null) {
+            Enchantment[] values = Enchantment.values();
+            enchantment = values.length > 0 ? values[0] : null;
+        }
+
+        return enchantment;
     }
 
     public ItemStack build() {
