@@ -74,18 +74,28 @@ public class CombatTask extends BukkitRunnable {
     }
 
     private void completeEquipping(Player player) {
+        boolean applied = combatPlayer.onApplyEquipment(combatController);
+        if (!applied) {
+            combatPlayer.stopCombatTask();
+            return;
+        }
+
         reset();
 
         XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
-        combatPlayer.onApplyEquipment(combatController);
         ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_EQUIPPED);
     }
 
     private void completeUnEquipping(Player player) {
+        boolean applied = combatPlayer.onApplyEquipment(combatController);
+        if (!applied) {
+            combatPlayer.stopCombatTask();
+            return;
+        }
+
         reset();
 
         XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
-        combatPlayer.onApplyEquipment(combatController);
         ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_UN_EQUIPPED);
     }
 }

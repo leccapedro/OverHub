@@ -13,6 +13,8 @@ import studio.overmine.overhub.controllers.CombatController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.combat.CombatStatus;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
+import studio.overmine.overhub.models.resources.types.LanguageResource;
+import studio.overmine.overhub.utilities.ChatUtil;
 
 /**
  * @author Risas
@@ -55,8 +57,16 @@ public class CombatListener implements Listener {
             combatPlayer.stopCombatTask();
             combatController.removeCombatPlayer(player);
         }
-        else if (combatPlayer.isPvP() && !combatPlayer.isCombatTaskRunning()) {
-            combatPlayer.startCombatTask(plugin, combatController);
+        else if (combatPlayer.isPvP()) {
+            if (combatPlayer.isInCombat()) {
+                ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_IN_COMBAT
+                        .replace("%time%", String.valueOf(combatPlayer.getCombatTimeRemainingSeconds())));
+                return;
+            }
+
+            if (!combatPlayer.isCombatTaskRunning()) {
+                combatPlayer.startCombatTask(plugin, combatController);
+            }
         }
     }
 
@@ -75,6 +85,12 @@ public class CombatListener implements Listener {
         if (damagerCombatPlayer == null) return;
 
         if (combatPlayer.isPvP() && damagerCombatPlayer.isPvP()) {
+            combatPlayer.stopCombatTask();
+            damagerCombatPlayer.stopCombatTask();
+
+            combatPlayer.startOrRefreshCombat(plugin, combatController);
+            damagerCombatPlayer.startOrRefreshCombat(plugin, combatController);
+
             event.setCancelled(false);
         }
     }
@@ -94,6 +110,6 @@ public class CombatListener implements Listener {
         CombatPlayer combatPlayer = combatController.getCombatPlayer(event.getPlayer());
         if (combatPlayer == null) return;
 
-        combatPlayer.stopCombatTask();
+        combatController.removeCombatPlayer(event.getPlayer());
     }
 }

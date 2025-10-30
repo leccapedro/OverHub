@@ -13,7 +13,8 @@ public class LanguageResource extends Resource {
 
     public static String SERVER_MESSAGE_ON_JOIN, SERVER_MESSAGE_ON_QUIT;
     public static String COMBAT_SWORD_MESSAGE_EQUIPPING, COMBAT_SWORD_MESSAGE_UN_EQUIPPING,
-            COMBAT_SWORD_MESSAGE_EQUIPPED, COMBAT_SWORD_MESSAGE_UN_EQUIPPED;
+            COMBAT_SWORD_MESSAGE_EQUIPPED, COMBAT_SWORD_MESSAGE_UN_EQUIPPED,
+            COMBAT_SWORD_MESSAGE_IN_COMBAT;
     public static String SPAWN_MESSAGE_SET, SPAWN_MESSAGE_TELEPORT;
     public static String PARKOUR_MESSAGE_START, PARKOUR_MESSAGE_STREAK, PARKOUR_MESSAGE_FALL,
             PARKOUR_MESSAGE_NEW_HS, PARKOUR_MESSAGE_NOT_CUBOID, PARKOUR_MESSAGE_ERROR;
@@ -33,6 +34,7 @@ public class LanguageResource extends Resource {
         COMBAT_SWORD_MESSAGE_UN_EQUIPPING = languageFile.getString("combat-sword-message.un-equipping");
         COMBAT_SWORD_MESSAGE_EQUIPPED = languageFile.getString("combat-sword-message.equipped");
         COMBAT_SWORD_MESSAGE_UN_EQUIPPED = languageFile.getString("combat-sword-message.un-equipped");
+        COMBAT_SWORD_MESSAGE_IN_COMBAT = languageFile.getString("combat-sword-message.in-combat");
         SPAWN_MESSAGE_SET = languageFile.getString("spawn-message.set");
         SPAWN_MESSAGE_TELEPORT = languageFile.getString("spawn-message.teleport");
         PARKOUR_MESSAGE_START = languageFile.getString("parkour-message.start");

@@ -22,6 +22,7 @@ public class ConfigResource extends Resource {
     public static boolean PVP_MODE_ENABLED;
     public static PvPActivationMode PVP_ACTIVATION_MODE;
     public static int PVP_ACTIVATION_COOLDOWN_SECONDS;
+    public static int PVP_COMBAT_DURATION_SECONDS;
     public static int PVP_SWORD_SLOT;
     public static ItemStack PVP_SWORD_ITEM;
     public static ItemStack[] PVP_EQUIPMENT;
@@ -49,6 +50,7 @@ public class ConfigResource extends Resource {
         PVP_MODE_ENABLED = configFile.getBoolean("pvp-mode.enabled");
         PVP_ACTIVATION_MODE = PvPActivationMode.fromString(configFile.getString("pvp-mode.activation.mode"));
         PVP_ACTIVATION_COOLDOWN_SECONDS = Math.max(0, configFile.getInt("pvp-mode.activation.cooldown_seconds"));
+        PVP_COMBAT_DURATION_SECONDS = Math.max(0, configFile.getInt("pvp-mode.combat.duration_seconds"));
         PVP_SWORD_SLOT = configFile.getInt("pvp-mode.sword.slot");
         PVP_SWORD_ITEM = configFile.getItemStack("pvp-mode.sword");
         PVP_EQUIPMENT = new ItemStack[]{

@@ -30,9 +30,11 @@ boss-bar-system: # NOT AVAILABLE IN 1.8
       color: BLUE
       style: SOLID
 
-hub-sword-system:
+pvp-mode:
   enabled: true
-  delay: 5
+  activation:
+    mode: "cooldown" # instant | cooldown
+    cooldown_seconds: 5
   sword:
     slot: 4
     name: "&cCombat Sword"
@@ -42,6 +44,8 @@ hub-sword-system:
     material: DIAMOND_SWORD
     enchants:
       damage_all: 3
+  combat:
+    duration_seconds: 15
   equipment:
     helmet:
       name: "&cBattle Helmet"
@@ -63,6 +67,9 @@ hub-sword-system:
       material: DIAMOND_BOOTS
       enchants:
         protection_environmental: 2
+  spawn:
+    enabled: false
+    location: ""
 
 parkour-system:
   enabled: true

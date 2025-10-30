@@ -34,6 +34,12 @@ public class CombatController {
     }
 
     public void removeCombatPlayer(Player player) {
-        combats.remove(player.getUniqueId());
+        CombatPlayer combatPlayer = combats.remove(player.getUniqueId());
+        if (combatPlayer == null) {
+            return;
+        }
+
+        combatPlayer.stopCombatTask();
+        combatPlayer.stopCombatModeTimer();
     }
 }

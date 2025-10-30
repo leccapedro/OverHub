@@ -11,6 +11,7 @@ combat-sword-message:
   equipped: "&4&lLOBBY &8» &fYour pvp mode has been &aenabled&f."
   un-equipping: "&4&lLOBBY &8» &fYour pvp mode will be disabled in &e%countdown% &fseconds."
   un-equipped: "&4&lLOBBY &8» &fYour pvp mode has been &cdisabled&f."
+  in-combat: "&4&lLOBBY &8» &cYou cannot disable PvP while in combat. Time left: &e%time%s&c."
 
 parkour-message:
   start: "&4&lPARKOUR &8» &7Try to get over your high-score of &b%score%&7!"
