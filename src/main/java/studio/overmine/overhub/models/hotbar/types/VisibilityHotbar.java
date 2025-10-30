@@ -6,9 +6,12 @@ import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.hotbar.Hotbar;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.models.user.VisibilityType;
+import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.cooldown.CooldownUtil;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.TimeUnit;
 
 public class VisibilityHotbar extends Hotbar {
 
@@ -30,7 +33,13 @@ public class VisibilityHotbar extends Hotbar {
     @Override
     public void onAction(Player player) {
         if (CooldownUtil.hasCooldown(player, "visibility-hotbar")) {
-            ChatUtil.sendMessage(player, "&cYou must wait " + CooldownUtil.getCooldownFormatted(player, "visibility-hotbar") + " before changing your visibility again.");
+            long cooldownMillis = CooldownUtil.getCooldown(player, "visibility-hotbar");
+            long cooldownSeconds = cooldownMillis > 0L
+                    ? TimeUnit.MILLISECONDS.toSeconds(cooldownMillis)
+                    : 0L;
+
+            ChatUtil.sendMessage(player, LanguageResource.VISIBILITY_MESSAGE_COOLDOWN
+                    .replace("%cooldown%", String.valueOf(cooldownSeconds)));
             return;
         }
 
