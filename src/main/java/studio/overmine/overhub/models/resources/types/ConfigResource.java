@@ -25,6 +25,8 @@ public class ConfigResource extends Resource {
     public static int PVP_COMBAT_DURATION_SECONDS;
     public static int PVP_SWORD_SLOT;
     public static ItemStack PVP_SWORD_ITEM;
+    public static int PVP_EXIT_ITEM_SLOT;
+    public static ItemStack PVP_EXIT_ITEM;
     public static ItemStack[] PVP_EQUIPMENT;
     public static boolean PVP_SPAWN_ENABLED;
     public static String PVP_SPAWN_LOCATION;
@@ -53,6 +55,8 @@ public class ConfigResource extends Resource {
         PVP_COMBAT_DURATION_SECONDS = Math.max(0, configFile.getInt("pvp-mode.combat.duration_seconds"));
         PVP_SWORD_SLOT = configFile.getInt("pvp-mode.sword.slot");
         PVP_SWORD_ITEM = configFile.getItemStack("pvp-mode.sword");
+        PVP_EXIT_ITEM_SLOT = configFile.getInt("pvp-mode.exit-item.slot");
+        PVP_EXIT_ITEM = configFile.getItemStack("pvp-mode.exit-item");
         PVP_EQUIPMENT = new ItemStack[]{
                 configFile.getItemStack("pvp-mode.equipment.boots"),
                 configFile.getItemStack("pvp-mode.equipment.leggings"),

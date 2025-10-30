@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.Bukkit;
 import studio.overmine.overhub.commands.parkour.ParkourCommand;
+import studio.overmine.overhub.commands.pvp.PvpCommand;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
@@ -63,7 +64,6 @@ public class OverHub extends JavaPlugin {
         this.hotbarController = new HotbarController(this);
         this.serverSelectorController = new ServerSelectorController(this);
         this.lobbySelectorController = new LobbySelectorController(this);
-        this.fastBoardController = new FastBoardController(this);
 
         if (ConfigResource.PARKOUR_SYSTEM_ENABLED && BukkitUtil.SERVER_VERSION >= 13) {
             this.parkourController = new ParkourController(this);
@@ -76,7 +76,7 @@ public class OverHub extends JavaPlugin {
 
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             this.fastBoardController = new FastBoardController(this);
-            this.fastBoardController.setAdapter(new FastBoardProvider(fastBoardController));
+            this.fastBoardController.setAdapter(new FastBoardProvider(this.fastBoardController));
         }
         if (ConfigResource.BOSS_BAR_SYSTEM_ENABLED && BukkitUtil.SERVER_VERSION >= 9) {
             this.bossBarController = new BossBarController(this, getFileConfig("config"));
@@ -99,7 +99,7 @@ public class OverHub extends JavaPlugin {
         if (ScoreboardResource.SCOREBOARD_ENABLED) {
             pluginManager.registerEvents(new FastBoardListener(this), this);
         }
-        if (ConfigResource.PARKOUR_SYSTEM_ENABLED) {
+        if (this.parkourController != null) {
             pluginManager.registerEvents(new ParkourListener(this), this);
         }
 
@@ -107,6 +107,9 @@ public class OverHub extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("overhub")).setTabCompleter(new OverHubCommand(this));
         Objects.requireNonNull(this.getCommand("spawn")).setExecutor(new SpawnCommand(spawnController));
         Objects.requireNonNull(this.getCommand("setspawn")).setExecutor(new SetSpawnCommand(spawnController));
+        PvpCommand pvpCommand = new PvpCommand(this);
+        Objects.requireNonNull(this.getCommand("pvp")).setExecutor(pvpCommand);
+        Objects.requireNonNull(this.getCommand("pvp")).setTabCompleter(pvpCommand);
 
         if (parkourController != null) {
             Objects.requireNonNull(this.getCommand("parkour")).setExecutor(new ParkourCommand(parkourController));

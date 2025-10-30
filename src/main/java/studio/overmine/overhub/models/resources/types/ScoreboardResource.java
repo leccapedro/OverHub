@@ -1,16 +1,26 @@
 package studio.overmine.overhub.models.resources.types;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.Resource;
+import studio.overmine.overhub.models.scoreboard.ScoreboardModel;
+import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public class    ScoreboardResource extends Resource {
+public class ScoreboardResource extends Resource {
 
     public static boolean SCOREBOARD_ENABLED, SCOREBOARD_TITLE_ANIMATION_ENABLED, SCOREBOARD_FOOTER_ANIMATION_ENABLED;
     public static long SCOREBOARD_TITLE_ANIMATION_INTERVAL, SCOREBOARD_FOOTER_ANIMATION_INTERVAL;
-    public static List<String> SCOREBOARD_LINES, SCOREBOARD_TITLE_ANIMATION_LINES, SCOREBOARD_FOOTER_ANIMATION_LINES;
+    public static List<String> SCOREBOARD_TITLE_ANIMATION_LINES, SCOREBOARD_FOOTER_ANIMATION_LINES;
+    public static ScoreboardModel SCOREBOARD_MODEL;
 
     public ScoreboardResource(OverHub plugin) {
         super(plugin);
@@ -19,13 +29,41 @@ public class    ScoreboardResource extends Resource {
     @Override
     public void initialize() {
         FileConfig scoreboardFile = plugin.getFileConfig("scoreboard");
-        SCOREBOARD_ENABLED = scoreboardFile.getBoolean("scoreboard.enabled");
-        SCOREBOARD_LINES = scoreboardFile.getStringList("scoreboard.lines");
-        SCOREBOARD_TITLE_ANIMATION_ENABLED = scoreboardFile.getBoolean("title-animation.enabled");
-        SCOREBOARD_TITLE_ANIMATION_INTERVAL = scoreboardFile.getInt("title-animation.interval");
-        SCOREBOARD_TITLE_ANIMATION_LINES = scoreboardFile.getStringList("title-animation.lines");
-        SCOREBOARD_FOOTER_ANIMATION_ENABLED = scoreboardFile.getBoolean("footer-animation.enabled");
-        SCOREBOARD_FOOTER_ANIMATION_INTERVAL = scoreboardFile.getInt("footer-animation.interval");
-        SCOREBOARD_FOOTER_ANIMATION_LINES = scoreboardFile.getStringList("footer-animation.lines");
+        FileConfiguration configuration = scoreboardFile.getConfiguration();
+
+        SCOREBOARD_ENABLED = configuration.getBoolean("scoreboard.enabled", true);
+
+        Map<String, ScoreboardModel.Layout> layouts = new LinkedHashMap<>();
+        ConfigurationSection layoutsSection = configuration.getConfigurationSection("scoreboard.layouts");
+        if (layoutsSection != null) {
+            for (String key : layoutsSection.getKeys(false)) {
+                ConfigurationSection layoutSection = layoutsSection.getConfigurationSection(key);
+                if (layoutSection == null) {
+                    continue;
+                }
+
+                List<String> lines = new ArrayList<>(layoutSection.getStringList("lines"));
+                layouts.put(key.toLowerCase(Locale.ROOT), new ScoreboardModel.Layout(key, lines));
+            }
+        }
+
+        String defaultLayoutKey = configuration.getString("scoreboard.default-layout", "lobby");
+        SCOREBOARD_MODEL = new ScoreboardModel(SCOREBOARD_ENABLED, defaultLayoutKey, layouts);
+
+        SCOREBOARD_TITLE_ANIMATION_ENABLED = configuration.getBoolean("title-animation.enabled", true);
+        SCOREBOARD_TITLE_ANIMATION_INTERVAL = configuration.getLong("title-animation.interval", 200L);
+        List<String> titleLines = configuration.getStringList("title-animation.lines");
+        if (titleLines == null || titleLines.isEmpty()) {
+            titleLines = Collections.singletonList("&6&lOverHub");
+        }
+        SCOREBOARD_TITLE_ANIMATION_LINES = ChatUtil.translate(titleLines);
+
+        SCOREBOARD_FOOTER_ANIMATION_ENABLED = configuration.getBoolean("footer-animation.enabled", true);
+        SCOREBOARD_FOOTER_ANIMATION_INTERVAL = configuration.getLong("footer-animation.interval", 3000L);
+        List<String> footerLines = configuration.getStringList("footer-animation.lines");
+        if (footerLines == null || footerLines.isEmpty()) {
+            footerLines = Collections.singletonList("&7server.net");
+        }
+        SCOREBOARD_FOOTER_ANIMATION_LINES = ChatUtil.translate(footerLines);
     }
 }

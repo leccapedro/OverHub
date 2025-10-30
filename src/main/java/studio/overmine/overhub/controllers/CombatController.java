@@ -28,7 +28,7 @@ public class CombatController {
             return;
         }
 
-        CombatPlayer combatPlayer = new CombatPlayer(player);
+        CombatPlayer combatPlayer = new CombatPlayer(plugin, player);
         combats.put(player.getUniqueId(), combatPlayer);
         combatPlayer.startCombatTask(plugin, this);
     }
@@ -41,5 +41,6 @@ public class CombatController {
 
         combatPlayer.stopCombatTask();
         combatPlayer.stopCombatModeTimer();
+        plugin.getHotbarController().discardLobbySnapshot(player.getUniqueId());
     }
 }

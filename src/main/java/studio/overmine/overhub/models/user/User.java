@@ -1,16 +1,17 @@
 package studio.overmine.overhub.models.user;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
-import lombok.Setter;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.utilities.FileConfig;
 
-@Getter @Setter
+@Getter
 public class User {
 
     private UUID uuid;
@@ -18,6 +19,7 @@ public class User {
     private VisibilityType visibilityType;
     private FileConfig dataFile;
     private int parkourHS;
+    private ItemStack[] pvpHotbar;
 
     public User(OverHub plugin, UUID uuid, String name) {
         this.uuid = uuid;
@@ -25,8 +27,9 @@ public class User {
         this.visibilityType = VisibilityType.ALL;
         this.dataFile = new FileConfig(plugin, "data/user-data/" + uuid.toString() + ".yml");
         this.parkourHS = 0;
+        this.pvpHotbar = new ItemStack[36];
     }
-    
+
     public void executeCurrentVisibility() {
         switch (visibilityType) {
             case ALL:
@@ -84,5 +87,57 @@ public class User {
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setVisibilityType(VisibilityType visibilityType) {
+        this.visibilityType = visibilityType;
+    }
+
+    public void setParkourHS(int parkourHS) {
+        this.parkourHS = parkourHS;
+    }
+
+    public void setPvpHotbar(ItemStack[] hotbar) {
+        if (hotbar == null) {
+            this.pvpHotbar = new ItemStack[36];
+            return;
+        }
+
+        int size = Math.min(36, hotbar.length);
+        ItemStack[] clone = new ItemStack[36];
+        for (int i = 0; i < size; i++) {
+            clone[i] = hotbar[i] != null ? hotbar[i].clone() : null;
+        }
+        if (size < 36) {
+            Arrays.fill(clone, size, 36, null);
+        }
+        this.pvpHotbar = clone;
+    }
+
+    public boolean hasPvpHotbar() {
+        if (pvpHotbar == null) {
+            return false;
+        }
+        for (ItemStack itemStack : pvpHotbar) {
+            if (itemStack != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ItemStack[] getPvpHotbarClone() {
+        if (pvpHotbar == null) {
+            return new ItemStack[36];
+        }
+        ItemStack[] clone = new ItemStack[pvpHotbar.length];
+        for (int i = 0; i < pvpHotbar.length; i++) {
+            clone[i] = pvpHotbar[i] != null ? pvpHotbar[i].clone() : null;
+        }
+        return clone;
     }
 }

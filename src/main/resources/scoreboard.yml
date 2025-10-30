@@ -1,17 +1,46 @@
+# Scoreboard configuration
+# - Define each layout under `scoreboard.layouts.<name>.lines`.
+# - Customize the lines directly inside each layout (colors and text are supported with standard codes).
+# - The plugin keeps the title/footer animations below and injects the footer when `%scoreboard-footer%` is used.
+# - The `pvpmode` layout is automatically selected whenever `%pvp_enabled%` resolves to a truthy value.
 scoreboard:
   enabled: true
-  lines:
-    - "&7&m-----------------------------"
-    - ""
-    - "&6Online:"
-    - "&f%bungee_total%"
-    - ""
-    - "&6Rank:"
-    - "&f%luckperms_primary_group_name%"
-    - ""
-    - "%scoreboard-footer%"
-    - "&7&m-----------------------------"
+  default-layout: lobby
+  layouts:
+    lobby:
+      # Default hub scoreboard when the player is not in PvP mode.
+      lines:
+        - "&7&m-----------------------------"
+        - ""
+        - "&6Online:"
+        - "&f%bungee_total%"
+        - ""
+        - "&6Rank:"
+        - "&f%luckperms_primary_group_name%"
+        - ""
+        - "&6PvP Mode:"
+        - "&cDisabled"
+        - ""
+        - "%scoreboard-footer%"
+        - "&7&m-----------------------------"
+    pvpmode:
+      # Scoreboard shown while PvP mode is enabled for the player.
+      lines:
+        - "&7&m-----------------------------"
+        - ""
+        - "&6Online:"
+        - "&f%bungee_total%"
+        - ""
+        - "&6Rank:"
+        - "&f%luckperms_primary_group_name%"
+        - ""
+        - "&6PvP Mode:"
+        - "&aEnabled"
+        - ""
+        - "%scoreboard-footer%"
+        - "&7&m-----------------------------"
 
+# Title animation shared by every layout.
 title-animation:
   enabled: true
   interval: 200 # 0.2 seconds
@@ -20,6 +49,7 @@ title-animation:
     - "&e&lServer Network"
     - "&f&lServer Network"
 
+# Footer animation shared by every layout.
 footer-animation:
   enabled: true
   interval: 3000 # 3 seconds

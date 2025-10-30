@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>studio.overmine.overhub</groupId>
+    <groupId>studio.overmine.overhub.overhub</groupId>
     <artifactId>OverHub</artifactId>
     <version>1.0.2-SNAPSHOT</version>
 
@@ -113,11 +113,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.cryptomorin.xseries</pattern>
-                            <shadedPattern>studio.overmine.overhub.shade.xseries</shadedPattern>
+                            <shadedPattern>studio.overmine.overhub.overhub.shade.xseries</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.kyori</pattern>
-                            <shadedPattern>studio.overmine.overhub.shade.kyori</shadedPattern>
+                            <shadedPattern>studio.overmine.overhub.overhub.shade.kyori</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

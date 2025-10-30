@@ -17,4 +17,8 @@ commands:
   parkour:
     permission: "overhub.command.parkour"
     description: "Parkour command"
+  pvp:
+    permission: "overhub.command.pvp"
+    description: "PvP command"
+    aliases: ["combat"]
 

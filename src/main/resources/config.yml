@@ -46,6 +46,12 @@ pvp-mode:
       damage_all: 3
   combat:
     duration_seconds: 15
+  exit-item:
+    slot: 8
+    material: RED_DYE
+    name: "&cLeave PvP Mode"
+    lore:
+      - "&7Click to return to the lobby hotbar"
   equipment:
     helmet:
       name: "&cBattle Helmet"

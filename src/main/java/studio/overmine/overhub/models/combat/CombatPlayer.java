@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
+import studio.overmine.overhub.controllers.HotbarController;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.tasks.CombatModeTask;
@@ -19,6 +20,7 @@ import studio.overmine.overhub.utilities.ChatUtil;
 @Getter
 public class CombatPlayer {
 
+    private final OverHub plugin;
     private final Player player;
     private CombatStatus status;
     private CombatTask combatTask;
@@ -28,7 +30,8 @@ public class CombatPlayer {
     private int combatTimeRemainingSeconds;
     private long combatStartTimestamp;
 
-    public CombatPlayer(Player player) {
+    public CombatPlayer(OverHub plugin, Player player) {
+        this.plugin = plugin;
         this.player = player;
         this.status = CombatStatus.EQUIPPING;
         this.inCombat = false;
@@ -130,11 +133,17 @@ public class CombatPlayer {
     }
 
     public boolean onApplyEquipment(CombatController combatController) {
+        HotbarController hotbarController = plugin.getHotbarController();
+
         switch (status) {
             case EQUIPPING:
                 stopCombatTask();
 
                 status = CombatStatus.UN_EQUIPPING;
+                boolean hasLayout = hotbarController.applyPvpHotbar(player);
+                if (!hasLayout) {
+                    ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_MISSING);
+                }
                 player.getInventory().setArmorContents(ConfigResource.PVP_EQUIPMENT);
                 return true;
             case UN_EQUIPPING:
@@ -147,8 +156,10 @@ public class CombatPlayer {
                 stopCombatTask();
                 stopCombatModeTimer();
 
+                hotbarController.restoreLobbyHotbar(player);
                 combatController.removeCombatPlayer(player);
                 player.getInventory().setArmorContents(null);
+                status = CombatStatus.EQUIPPING;
                 return true;
         }
 

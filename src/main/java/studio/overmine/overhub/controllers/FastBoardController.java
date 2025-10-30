@@ -7,6 +7,7 @@ import studio.overmine.overhub.models.scoreboard.FastBoard;
 import studio.overmine.overhub.models.scoreboard.FastBoardAdapter;
 import studio.overmine.overhub.models.scoreboard.FastBoardAnimation;
 import studio.overmine.overhub.models.scoreboard.FastBoardThread;
+import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
@@ -62,5 +63,9 @@ public class FastBoardController {
     public void onReload() {
         this.titleAnimation = new FastBoardAnimation(ScoreboardResource.SCOREBOARD_TITLE_ANIMATION_LINES, ScoreboardResource.SCOREBOARD_TITLE_ANIMATION_INTERVAL);
         this.footerAnimation = new FastBoardAnimation(ScoreboardResource.SCOREBOARD_FOOTER_ANIMATION_LINES, ScoreboardResource.SCOREBOARD_FOOTER_ANIMATION_INTERVAL);
+
+        if (adapter == null || adapter instanceof FastBoardProvider) {
+            this.adapter = new FastBoardProvider(this);
+        }
     }
 }

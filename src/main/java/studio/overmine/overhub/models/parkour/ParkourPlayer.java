@@ -109,6 +109,9 @@ public class ParkourPlayer {
     }
 
     public Location getNextTargetBlock() {
+        if (activeBlocks.isEmpty()) {
+            return null;
+        }
         return activeBlocks.size() > 1 ? activeBlocks.get(1) : activeBlocks.get(0);
     }
 

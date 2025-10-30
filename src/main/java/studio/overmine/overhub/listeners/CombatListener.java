@@ -6,6 +6,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import studio.overmine.overhub.OverHub;
@@ -67,6 +69,35 @@ public class CombatListener implements Listener {
             if (!combatPlayer.isCombatTaskRunning()) {
                 combatPlayer.startCombatTask(plugin, combatController);
             }
+        }
+    }
+
+    @EventHandler
+    public void onExitItemInteract(PlayerInteractEvent event) {
+        if (!ConfigResource.PVP_MODE_ENABLED) return;
+
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+
+        if (ConfigResource.PVP_EXIT_ITEM == null) return;
+
+        if (event.getItem() == null || !event.getItem().isSimilar(ConfigResource.PVP_EXIT_ITEM)) return;
+
+        Player player = event.getPlayer();
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        if (combatPlayer == null || !combatPlayer.isPvP()) return;
+
+        event.setCancelled(true);
+
+        if (combatPlayer.isInCombat()) {
+            ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_EXIT_IN_COMBAT
+                    .replace("%time%", String.valueOf(combatPlayer.getCombatTimeRemainingSeconds())));
+            return;
+        }
+
+        if (!combatPlayer.isCombatTaskRunning()) {
+            combatPlayer.startCombatTask(plugin, combatController);
+            ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_EXIT_STARTED);
         }
     }
 
