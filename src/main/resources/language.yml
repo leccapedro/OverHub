@@ -19,3 +19,6 @@ parkour-message:
   new-high-score: "&4&lPARKOUR &8» &aCongratulations! &7You have achieved a new high-score &b%score% &7points."
   error: "&4&lPARKOUR &8» &cParkour could not be continued."
   area-not-defined: "&4&lPARKOUR &8» &cParkour area is not defined."
+
+visibility-message:
+  cooldown: "&cYou must wait %cooldown% seconds before changing your visibility again."
