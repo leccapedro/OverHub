@@ -89,8 +89,8 @@ public class HotbarController {
             inventory.setItem(hotbar.getItemSlot(), hotbar.getItemStack());
         }
 
-        if (ConfigResource.HUB_SWORD_SYSTEM_ENABLED) {
-            inventory.setItem(ConfigResource.HUB_SWORD_SYSTEM_SLOT, ConfigResource.HUB_SWORD_SYSTEM_SWORD);
+        if (ConfigResource.PVP_MODE_ENABLED) {
+            inventory.setItem(ConfigResource.PVP_SWORD_SLOT, ConfigResource.PVP_SWORD_ITEM);
         }
 
         User user = userController.getUser(player.getUniqueId());

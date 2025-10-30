@@ -21,7 +21,7 @@ public class CombatTask extends BukkitRunnable {
         this.plugin = plugin;
         this.combatPlayer = combatPlayer;
         this.combatController = combatController;
-        this.countdown = ConfigResource.HUB_SWORD_SYSTEM_DELAY;
+        this.countdown = getInitialCountdown();
     }
 
     @Override
@@ -30,12 +30,8 @@ public class CombatTask extends BukkitRunnable {
 
         switch (combatPlayer.getStatus()) {
             case EQUIPPING:
-                if (countdown <= 0) {
-                    reset();
-
-                    XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
-                    combatPlayer.onApplyEquipment(combatController);
-                    ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_EQUIPPED);
+                if (!isCooldownMode() || countdown <= 0) {
+                    completeEquipping(player);
                     return;
                 }
 
@@ -44,12 +40,8 @@ public class CombatTask extends BukkitRunnable {
                         .replace("%countdown%", String.valueOf(countdown)));
                 break;
             case UN_EQUIPPING:
-                if (countdown <= 0) {
-                    reset();
-
-                    XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
-                    combatPlayer.onApplyEquipment(combatController);
-                    ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_UN_EQUIPPED);
+                if (!isCooldownMode() || countdown <= 0) {
+                    completeUnEquipping(player);
                     return;
                 }
 
@@ -59,14 +51,41 @@ public class CombatTask extends BukkitRunnable {
                 break;
         }
 
-        countdown--;
+        if (isCooldownMode()) {
+            countdown--;
+        }
     }
 
     public void start() {
-        this.runTaskTimerAsynchronously(plugin, 20L, 20L);
+        long initialDelay = isCooldownMode() ? 20L : 0L;
+        this.runTaskTimerAsynchronously(plugin, initialDelay, 20L);
     }
 
     public void reset() {
-        this.countdown = ConfigResource.HUB_SWORD_SYSTEM_DELAY;
+        this.countdown = getInitialCountdown();
+    }
+
+    private boolean isCooldownMode() {
+        return ConfigResource.PVP_ACTIVATION_MODE == ConfigResource.PvPActivationMode.COOLDOWN;
+    }
+
+    private int getInitialCountdown() {
+        return isCooldownMode() ? ConfigResource.PVP_ACTIVATION_COOLDOWN_SECONDS : 0;
+    }
+
+    private void completeEquipping(Player player) {
+        reset();
+
+        XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
+        combatPlayer.onApplyEquipment(combatController);
+        ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_EQUIPPED);
+    }
+
+    private void completeUnEquipping(Player player) {
+        reset();
+
+        XSound.ENTITY_ARMOR_STAND_PLACE.play(player, 1F, 1F);
+        combatPlayer.onApplyEquipment(combatController);
+        ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_UN_EQUIPPED);
     }
 }

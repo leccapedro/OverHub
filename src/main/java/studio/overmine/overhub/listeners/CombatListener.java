@@ -31,12 +31,12 @@ public class CombatListener implements Listener {
 
     @EventHandler
     public void onCombatSword(PlayerItemHeldEvent event) {
-        if (!ConfigResource.HUB_SWORD_SYSTEM_ENABLED) return;
+        if (!ConfigResource.PVP_MODE_ENABLED) return;
 
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
 
-        if (itemStack != null && itemStack.equals(ConfigResource.HUB_SWORD_SYSTEM_SWORD)) {
+        if (itemStack != null && itemStack.equals(ConfigResource.PVP_SWORD_ITEM)) {
             CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
 
             if (combatPlayer != null && combatPlayer.isPvP()) {

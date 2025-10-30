@@ -3,6 +3,7 @@ package studio.overmine.overhub.models.resources.types;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.Resource;
@@ -18,10 +19,14 @@ public class ConfigResource extends Resource {
     public static List<String> WELCOME_MESSAGE;
     public static boolean CHAT_SYSTEM_ENABLED;
     public static String CHAT_SYSTEM_FORMAT;
-    public static boolean HUB_SWORD_SYSTEM_ENABLED;
-    public static int HUB_SWORD_SYSTEM_DELAY, HUB_SWORD_SYSTEM_SLOT;
-    public static ItemStack HUB_SWORD_SYSTEM_SWORD;
-    public static ItemStack[] HUB_SWORD_SYSTEM_EQUIPMENT;
+    public static boolean PVP_MODE_ENABLED;
+    public static PvPActivationMode PVP_ACTIVATION_MODE;
+    public static int PVP_ACTIVATION_COOLDOWN_SECONDS;
+    public static int PVP_SWORD_SLOT;
+    public static ItemStack PVP_SWORD_ITEM;
+    public static ItemStack[] PVP_EQUIPMENT;
+    public static boolean PVP_SPAWN_ENABLED;
+    public static String PVP_SPAWN_LOCATION;
     public static boolean BOSS_BAR_SYSTEM_ENABLED;
     public static boolean PARKOUR_SYSTEM_ENABLED;
     public static List<String> PARKOUR_SYSTEM_STREAK_COMMANDS;
@@ -41,16 +46,25 @@ public class ConfigResource extends Resource {
         WELCOME_MESSAGE = configFile.getStringList("welcome-message");
         CHAT_SYSTEM_ENABLED = configFile.getBoolean("chat-system.enabled");
         CHAT_SYSTEM_FORMAT = configFile.getString("chat-system.format");
-        HUB_SWORD_SYSTEM_ENABLED = configFile.getBoolean("hub-sword-system.enabled");
-        HUB_SWORD_SYSTEM_DELAY = configFile.getInt("hub-sword-system.delay");
-        HUB_SWORD_SYSTEM_SLOT = configFile.getInt("hub-sword-system.sword.slot");
-        HUB_SWORD_SYSTEM_SWORD = configFile.getItemStack("hub-sword-system.sword");
-        HUB_SWORD_SYSTEM_EQUIPMENT = new ItemStack[]{
-                configFile.getItemStack("hub-sword-system.equipment.boots"),
-                configFile.getItemStack("hub-sword-system.equipment.leggings"),
-                configFile.getItemStack("hub-sword-system.equipment.chestplate"),
-                configFile.getItemStack("hub-sword-system.equipment.helmet")
+        PVP_MODE_ENABLED = configFile.getBoolean("pvp-mode.enabled");
+        PVP_ACTIVATION_MODE = PvPActivationMode.fromString(configFile.getString("pvp-mode.activation.mode"));
+        PVP_ACTIVATION_COOLDOWN_SECONDS = Math.max(0, configFile.getInt("pvp-mode.activation.cooldown_seconds"));
+        PVP_SWORD_SLOT = configFile.getInt("pvp-mode.sword.slot");
+        PVP_SWORD_ITEM = configFile.getItemStack("pvp-mode.sword");
+        PVP_EQUIPMENT = new ItemStack[]{
+                configFile.getItemStack("pvp-mode.equipment.boots"),
+                configFile.getItemStack("pvp-mode.equipment.leggings"),
+                configFile.getItemStack("pvp-mode.equipment.chestplate"),
+                configFile.getItemStack("pvp-mode.equipment.helmet")
         };
+        ConfigurationSection spawnSection = configFile.getConfiguration().getConfigurationSection("pvp-mode.spawn");
+        if (spawnSection != null) {
+            PVP_SPAWN_ENABLED = spawnSection.getBoolean("enabled");
+            PVP_SPAWN_LOCATION = spawnSection.getString("location");
+        } else {
+            PVP_SPAWN_ENABLED = false;
+            PVP_SPAWN_LOCATION = "";
+        }
         BOSS_BAR_SYSTEM_ENABLED = configFile.getBoolean("boss-bar-system.enabled");
         PARKOUR_SYSTEM_ENABLED = configFile.getBoolean("parkour-system.enabled");
         PARKOUR_SYSTEM_STREAK_COMMANDS = configFile.getStringList("parkour-system.streak.commands");
@@ -66,6 +80,23 @@ public class ConfigResource extends Resource {
                 continue;
             }
             PARKOUR_SYSTEM_GENERATOR_BLOCKS.add(material.get().parseMaterial());
+        }
+    }
+
+    public enum PvPActivationMode {
+        INSTANT,
+        COOLDOWN;
+
+        public static PvPActivationMode fromString(String value) {
+            if (value == null) {
+                return COOLDOWN;
+            }
+
+            try {
+                return PvPActivationMode.valueOf(value.trim().toUpperCase());
+            } catch (IllegalArgumentException exception) {
+                return COOLDOWN;
+            }
         }
     }
 }

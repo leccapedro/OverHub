@@ -6,7 +6,7 @@ import studio.overmine.overhub.utilities.FileConfig;
 
 import java.util.List;
 
-public class ScoreboardResource extends Resource {
+public class    ScoreboardResource extends Resource {
 
     public static boolean SCOREBOARD_ENABLED, SCOREBOARD_TITLE_ANIMATION_ENABLED, SCOREBOARD_FOOTER_ANIMATION_ENABLED;
     public static long SCOREBOARD_TITLE_ANIMATION_INTERVAL, SCOREBOARD_FOOTER_ANIMATION_INTERVAL;

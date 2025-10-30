@@ -3,6 +3,7 @@ package studio.overmine.overhub.controllers;
 import org.bukkit.entity.Player;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.combat.CombatPlayer;
+import studio.overmine.overhub.models.resources.types.ConfigResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,11 @@ public class CombatController {
     }
 
     public void addCombatPlayer(Player player) {
-        CombatPlayer combatPlayer = new CombatPlayer(plugin, player);
+        if (!ConfigResource.PVP_MODE_ENABLED) {
+            return;
+        }
+
+        CombatPlayer combatPlayer = new CombatPlayer(player);
         combats.put(player.getUniqueId(), combatPlayer);
         combatPlayer.startCombatTask(plugin, this);
     }
