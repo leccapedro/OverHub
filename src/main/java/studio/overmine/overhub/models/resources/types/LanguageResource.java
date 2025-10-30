@@ -17,6 +17,7 @@ public class LanguageResource extends Resource {
     public static String SPAWN_MESSAGE_SET, SPAWN_MESSAGE_TELEPORT;
     public static String PARKOUR_MESSAGE_START, PARKOUR_MESSAGE_STREAK, PARKOUR_MESSAGE_FALL,
             PARKOUR_MESSAGE_NEW_HS, PARKOUR_MESSAGE_NOT_CUBOID, PARKOUR_MESSAGE_ERROR;
+    public static String VISIBILITY_MESSAGE_COOLDOWN;
 
     public LanguageResource(OverHub plugin) {
         super(plugin);
@@ -40,5 +41,6 @@ public class LanguageResource extends Resource {
         PARKOUR_MESSAGE_NEW_HS = languageFile.getString("parkour-message.new-high-score");
         PARKOUR_MESSAGE_NOT_CUBOID = languageFile.getString("parkour-message.area-not-defined");
         PARKOUR_MESSAGE_ERROR = languageFile.getString("parkour-message.error");
+        VISIBILITY_MESSAGE_COOLDOWN = languageFile.getString("visibility-message.cooldown");
     }
 }
