@@ -60,6 +60,6 @@ footer-animation:
     - "&astore.server.net"
     - "&9discord.server.net"
 
-"# PvP specific configuration."
+# Combat left message
 pvp:
   not-in-combat-message: "You're not in combat!"
