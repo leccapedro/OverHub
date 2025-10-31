@@ -1,3 +1,4 @@
+
 package studio.overmine.overhub.listeners;
 
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
+ 
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
@@ -20,6 +21,7 @@ import studio.overmine.overhub.models.combat.CombatStatus;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.models.user.User;
+import studio.overmine.overhub.models.user.types.PvpState;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 /**
@@ -44,37 +46,80 @@ public class CombatListener implements Listener {
         if (!ConfigResource.PVP_MODE_ENABLED) return;
 
         Player player = event.getPlayer();
-        ItemStack itemStack = player.getInventory().getItem(event.getNewSlot());
+        int newSlot = event.getNewSlot();
+        int previousSlot = event.getPreviousSlot();
+        int swordSlot = ConfigResource.PVP_SWORD_SLOT;
 
-        if (itemStack != null && itemStack.equals(ConfigResource.PVP_SWORD_ITEM)) {
-            CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        boolean isSelectingSwordSlot = (newSlot == swordSlot);
+        boolean isDeselectingSwordSlot = (previousSlot == swordSlot);
 
+        if (!isSelectingSwordSlot && !isDeselectingSwordSlot) {
+            return;
+        }
+
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+
+        if (isSelectingSwordSlot) {
             if (combatPlayer != null && combatPlayer.isPvP()) {
                 combatPlayer.stopCombatTask();
                 return;
             }
 
+            if (combatPlayer != null && combatPlayer.getStatus() == CombatStatus.EQUIPPING) {
+                return;
+            }
+        }
+
+        if (isDeselectingSwordSlot && combatPlayer != null) {
+            if (combatPlayer.getStatus() == CombatStatus.EQUIPPING) {
+                combatPlayer.stopCombatTask();
+                combatController.removeCombatPlayer(player);
+
+                User user = userController.getUser(player.getUniqueId());
+                if (user != null) {
+                    user.setPvpState(PvpState.INACTIVE);
+                    user.setPvpEnabled(false);
+                }
+                return;
+            }
+
+            if (combatPlayer.isPvP()) {
+                if (combatPlayer.isInCombat()) {
+                    return;
+                }
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onSwordInteract(PlayerInteractEvent event) {
+        if (!ConfigResource.PVP_MODE_ENABLED) return;
+
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+
+        if (ConfigResource.PVP_SWORD_ITEM == null) return;
+
+        if (event.getItem() == null || !event.getItem().isSimilar(ConfigResource.PVP_SWORD_ITEM)) return;
+
+        Player player = event.getPlayer();
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+
+        event.setCancelled(true);
+
+        if (combatPlayer == null) {
             combatController.addCombatPlayer(player);
             return;
         }
 
-        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
-        if (combatPlayer == null) return;
+        if (combatPlayer.isPvP()) {
+            combatPlayer.stopCombatTask();
+            return;
+        }
 
         if (combatPlayer.getStatus() == CombatStatus.EQUIPPING) {
-            combatPlayer.stopCombatTask();
-            combatController.removeCombatPlayer(player);
-        }
-        else if (combatPlayer.isPvP()) {
-            if (combatPlayer.isInCombat()) {
-                ChatUtil.sendMessage(player, LanguageResource.COMBAT_SWORD_MESSAGE_IN_COMBAT
-                        .replace("%time%", String.valueOf(combatPlayer.getCombatTimeRemainingSeconds())));
-                return;
-            }
-
-            if (!combatPlayer.isCombatTaskRunning()) {
-                combatPlayer.startCombatTask(plugin, combatController);
-            }
+            return;
         }
     }
 

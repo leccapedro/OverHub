@@ -36,7 +36,7 @@ scoreboard:
         - "&f%luckperms_primary_group_name%"
         - ""
         - "&6PvP State: &f%pvp_state%"
-        - "&6Combat Left: &f%combat_time_left%"
+        - "&6Combat Left: &f%pvp_combat_time_left%"
         - "&6Kills: &f%pvp_kills%"
         - "&6Streak: &f%pvp_streak%"
         - "&6Last Hit By: &f%last_hit_by%"

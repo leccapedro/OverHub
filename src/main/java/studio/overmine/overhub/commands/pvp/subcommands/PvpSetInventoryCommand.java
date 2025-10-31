@@ -3,6 +3,7 @@ package studio.overmine.overhub.commands.pvp.subcommands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
 import studio.overmine.overhub.controllers.HotbarController;
@@ -52,8 +53,10 @@ public class PvpSetInventoryCommand extends SubCommand {
         }
 
         HotbarController hotbarController = plugin.getHotbarController();
-        ItemStack[] storageContents = hotbarController.createStorageSnapshot(player.getInventory());
+        PlayerInventory inv = player.getInventory();
+        ItemStack[] storageContents = hotbarController.createStorageSnapshot(inv);
         hotbarController.saveGlobalPvpLayout(storageContents);
+        hotbarController.saveGlobalPvpEquipment(inv.getArmorContents(), inv.getItemInOffHand());
         user.setSavedPvpLayout(null);
         userController.saveUser(user);
 

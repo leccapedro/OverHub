@@ -37,6 +37,8 @@ public class HotbarController {
     private final ConcurrentMap<UUID, ItemStack[]> lobbyInventorySnapshots;
     private final ConcurrentMap<UUID, ItemStack> lobbyOffhandSnapshots;
     private volatile ItemStack[] globalPvpLayout;
+    private volatile ItemStack[] globalPvpArmor;
+    private volatile ItemStack globalPvpOffhand;
 
     public HotbarController(OverHub plugin) {
         this.plugin = plugin;
@@ -47,6 +49,8 @@ public class HotbarController {
         this.lobbyInventorySnapshots = new ConcurrentHashMap<>();
         this.lobbyOffhandSnapshots = new ConcurrentHashMap<>();
         this.globalPvpLayout = new ItemStack[0];
+        this.globalPvpArmor = null;
+        this.globalPvpOffhand = null;
         this.onReload(false);
     }
 
@@ -135,6 +139,16 @@ public class HotbarController {
 
         if (ConfigResource.PVP_EXIT_ITEM != null) {
             inventory.setItem(ConfigResource.PVP_EXIT_ITEM_SLOT, cloneItem(ConfigResource.PVP_EXIT_ITEM));
+        }
+
+        // Apply armor and offhand from global layout if available
+        if (globalPvpArmor != null) {
+            inventory.setArmorContents(cloneStorageContents(globalPvpArmor));
+            hasLayout = true;
+        }
+        if (BukkitUtil.SERVER_VERSION >= 9 && globalPvpOffhand != null) {
+            inventory.setItemInOffHand(cloneItem(globalPvpOffhand));
+            hasLayout = true;
         }
 
         return hasLayout;
@@ -296,8 +310,43 @@ public class HotbarController {
             layoutSection.set(String.valueOf(i), normalized[i]);
         }
 
+        // Clear optional armor/offhand sections to be populated by command that knows actual values
+        pvpInventoryFile.set("layout.armor", null);
+        pvpInventoryFile.set("layout.offhand", null);
+
         pvpInventoryFile.save();
         globalPvpLayout = cloneStorageContents(normalized);
+        globalPvpArmor = null;
+        globalPvpOffhand = null;
+    }
+
+    public synchronized void saveGlobalPvpEquipment(ItemStack[] armorContents, ItemStack offhandItem) {
+        if (pvpInventoryFile == null) {
+            return;
+        }
+
+        // Save armor in order: boots(0), leggings(1), chestplate(2), helmet(3)
+        pvpInventoryFile.set("layout.armor", null);
+        ConfigurationSection armorSection = pvpInventoryFile.getConfiguration().createSection("layout.armor");
+        if (armorContents != null) {
+            ItemStack[] normalizedArmor = normalizeStorageContents(armorContents, 4);
+            for (int i = 0; i < 4; i++) {
+                armorSection.set(String.valueOf(i), normalizedArmor[i]);
+            }
+            globalPvpArmor = cloneStorageContents(normalizedArmor);
+        } else {
+            globalPvpArmor = null;
+        }
+
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            pvpInventoryFile.set("layout.offhand", offhandItem);
+            globalPvpOffhand = cloneItem(offhandItem);
+        } else {
+            pvpInventoryFile.set("layout.offhand", null);
+            globalPvpOffhand = null;
+        }
+
+        pvpInventoryFile.save();
     }
 
     public void migrateLegacyPvpLayout(ItemStack[] layout) {
@@ -349,9 +398,27 @@ public class HotbarController {
     }
 
     private void loadGlobalPvpLayout() {
-        ConfigurationSection layoutSection = pvpInventoryFile.getConfiguration().getConfigurationSection("layout.hotbar");
+        ConfigurationSection hotbarSection = pvpInventoryFile.getConfiguration().getConfigurationSection("layout.hotbar");
         int fallbackSize = Math.max(DEFAULT_STORAGE_SIZE, pvpInventoryFile.getConfiguration().getInt("layout.size", DEFAULT_STORAGE_SIZE));
-        globalPvpLayout = readLayout(layoutSection, fallbackSize);
+        globalPvpLayout = readLayout(hotbarSection, fallbackSize);
+
+        ConfigurationSection armorSection = pvpInventoryFile.getConfiguration().getConfigurationSection("layout.armor");
+        if (armorSection != null) {
+            ItemStack[] armor = new ItemStack[4];
+            armor[0] = armorSection.getItemStack("0");
+            armor[1] = armorSection.getItemStack("1");
+            armor[2] = armorSection.getItemStack("2");
+            armor[3] = armorSection.getItemStack("3");
+            boolean any = false;
+            for (ItemStack it : armor) {
+                if (it != null) { any = true; break; }
+            }
+            globalPvpArmor = any ? armor : null;
+        } else {
+            globalPvpArmor = null;
+        }
+
+        globalPvpOffhand = pvpInventoryFile.getConfiguration().getItemStack("layout.offhand");
     }
 
     private ItemStack[] readLayout(ConfigurationSection section, int fallbackSize) {

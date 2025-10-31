@@ -161,7 +161,7 @@ public class CombatPlayer {
                 if (!hasLayout) {
                     ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_MISSING);
                 }
-                player.getInventory().setArmorContents(ConfigResource.PVP_EQUIPMENT);
+                // Armor is now provided by the saved PvP layout (global pvp-inventory.yml)
                 updateUserState(PvpState.ACTIVE, true);
                 teleportToCombatSpawn();
                 return true;

@@ -106,7 +106,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new MenuListener(), this);
         pluginManager.registerEvents(new SpawnListener(this), this);
         pluginManager.registerEvents(new HotbarListener(this), this);
-        pluginManager.registerEvents(new PlayerListener(), this);
+        pluginManager.registerEvents(new PlayerListener(this), this);
         pluginManager.registerEvents(new WorldListener(), this);
         pluginManager.registerEvents(new DoubleJumpListener(), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
