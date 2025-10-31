@@ -1,5 +1,8 @@
 server-name: "lobby-1"
 spawn-location: ""
+combat-spawn:
+  enabled: true
+  location: ""
 
 welcome-message:
   - "&7&m----------------------------------------"
@@ -73,9 +76,6 @@ pvp-mode:
       material: DIAMOND_BOOTS
       enchants:
         protection_environmental: 2
-  spawn:
-    enabled: false
-    location: ""
 
 parkour-system:
   enabled: true

@@ -3,19 +3,23 @@ package studio.overmine.overhub.listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
+import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.combat.CombatStatus;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
+import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.utilities.ChatUtil;
 
 /**
@@ -27,10 +31,12 @@ public class CombatListener implements Listener {
 
     private final OverHub plugin;
     private final CombatController combatController;
+    private final UserController userController;
 
     public CombatListener(OverHub plugin, CombatController combatController) {
         this.plugin = plugin;
         this.combatController = combatController;
+        this.userController = plugin.getUserController();
     }
 
     @EventHandler
@@ -123,6 +129,8 @@ public class CombatListener implements Listener {
             damagerCombatPlayer.startOrRefreshCombat(plugin, combatController);
 
             event.setCancelled(false);
+
+            recordLastHit(player, damager);
         }
     }
 
@@ -142,5 +150,50 @@ public class CombatListener implements Listener {
         if (combatPlayer == null) return;
 
         combatController.removeCombatPlayer(event.getPlayer());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        CombatPlayer victimCombatPlayer = combatController.getCombatPlayer(victim);
+        boolean victimInPvp = victimCombatPlayer != null && victimCombatPlayer.isPvP();
+        if (victimCombatPlayer != null) {
+            victimCombatPlayer.resetCombatState(true);
+        }
+
+        User victimUser = userController.getUser(victim.getUniqueId());
+        if (victimUser != null && victimInPvp) {
+            victimUser.resetPvpKillStreak();
+            victimUser.clearLastHitBy();
+            userController.saveUser(victimUser);
+        }
+
+        Player killer = victim.getKiller();
+        if (killer == null || !victimInPvp) {
+            return;
+        }
+
+        CombatPlayer killerCombatPlayer = combatController.getCombatPlayer(killer);
+        if (killerCombatPlayer == null || !killerCombatPlayer.isPvP()) {
+            return;
+        }
+
+        User killerUser = userController.getUser(killer.getUniqueId());
+        if (killerUser == null) {
+            return;
+        }
+
+        killerUser.incrementPvpKills();
+        killerUser.incrementPvpKillStreak();
+        userController.saveUser(killerUser);
+    }
+
+    private void recordLastHit(Player victim, Player damager) {
+        User victimUser = userController.getUser(victim.getUniqueId());
+        if (victimUser == null) {
+            return;
+        }
+
+        victimUser.setLastHitBy(damager.getName());
     }
 }

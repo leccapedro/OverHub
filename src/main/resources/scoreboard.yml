@@ -3,6 +3,7 @@
 # - Customize the lines directly inside each layout (colors and text are supported with standard codes).
 # - The plugin keeps the title/footer animations below and injects the footer when `%scoreboard-footer%` is used.
 # - The `pvpmode` layout is automatically selected whenever `%pvp_enabled%` resolves to a truthy value.
+# - Customize the `%pvp_state%` placeholder with the labels under `pvp.state-labels` below (color codes supported).
 scoreboard:
   enabled: true
   default-layout: lobby
@@ -34,8 +35,11 @@ scoreboard:
         - "&6Rank:"
         - "&f%luckperms_primary_group_name%"
         - ""
-        - "&6PvP Mode:"
-        - "&aEnabled"
+        - "&6PvP State: &f%pvp_state%"
+        - "&6Combat Left: &f%combat_time_left%"
+        - "&6Kills: &f%pvp_kills%"
+        - "&6Streak: &f%pvp_streak%"
+        - "&6Last Hit By: &f%last_hit_by%"
         - ""
         - "%scoreboard-footer%"
         - "&7&m-----------------------------"
@@ -57,3 +61,19 @@ footer-animation:
     - "&7server.net"
     - "&astore.server.net"
     - "&9discord.server.net"
+
+# PvP specific configuration.
+pvp:
+  # Labels applied to the `%pvp_state%` placeholder. Keys must match the internal enum names.
+  state-labels:
+    inactive: "&cInactive"
+    equipping: "&eEquipping"
+    active: "&aActive"
+    exiting: "&6Exiting"
+    combat: "&4In Combat"
+  # Labels shown by `%combat_time_left%` when the player is not actively in combat.
+  combat-left-labels:
+    inactive: "&c✖"
+    equipping: "&e…"
+    active: "&a✔"
+    exiting: "&6…"

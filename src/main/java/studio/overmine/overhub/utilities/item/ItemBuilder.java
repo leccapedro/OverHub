@@ -44,6 +44,14 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(String material) {
+        if (material == null || material.trim().isEmpty()) {
+            this.itemStack = new ItemStack(Material.BARRIER);
+            this.itemMeta = itemStack.getItemMeta();
+
+            Bukkit.getLogger().warning("Attempted to create an item with a missing material. Using BARRIER as a fallback item.");
+            return;
+        }
+
         XMaterial xmaterial = XMaterial.matchXMaterial(material)
                 .orElse(null);
 
@@ -51,7 +59,7 @@ public class ItemBuilder {
             this.itemStack = new ItemStack(Material.BARRIER);
             this.itemMeta = itemStack.getItemMeta();
 
-            Bukkit.getLogger().severe("ERROR - INVALID MATERIAL: " + material);
+            Bukkit.getLogger().severe("ERROR - INVALID MATERIAL: " + material + ". Using BARRIER as a fallback item.");
             return;
         }
 

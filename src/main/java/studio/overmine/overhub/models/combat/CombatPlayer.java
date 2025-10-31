@@ -2,11 +2,15 @@ package studio.overmine.overhub.models.combat;
 
 import lombok.Getter;
 import org.bukkit.entity.Player;
+
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
 import studio.overmine.overhub.controllers.HotbarController;
+import studio.overmine.overhub.controllers.SpawnController;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.LanguageResource;
+import studio.overmine.overhub.models.user.User;
+import studio.overmine.overhub.models.user.types.PvpState;
 import studio.overmine.overhub.tasks.CombatModeTask;
 import studio.overmine.overhub.tasks.CombatTask;
 import studio.overmine.overhub.utilities.ChatUtil;
@@ -38,6 +42,8 @@ public class CombatPlayer {
         this.combatDurationSeconds = 0;
         this.combatTimeRemainingSeconds = 0;
         this.combatStartTimestamp = 0L;
+
+        updateUserState(PvpState.EQUIPPING, false);
     }
 
     public boolean isPvP() {
@@ -55,6 +61,13 @@ public class CombatPlayer {
     public void startCombatTask(OverHub plugin, CombatController combatController) {
         if (combatTask != null) {
             combatTask.cancel();
+        }
+
+        if (status == CombatStatus.EQUIPPING) {
+            updateUserState(PvpState.EQUIPPING, false);
+        }
+        else {
+            updateUserState(PvpState.EXITING, true);
         }
 
         combatTask = new CombatTask(plugin, this, combatController);
@@ -78,6 +91,8 @@ public class CombatPlayer {
         inCombat = true;
         combatTimeRemainingSeconds = combatDurationSeconds;
         combatStartTimestamp = System.currentTimeMillis();
+
+        updateUserState(PvpState.COMBAT, true);
 
         if (combatModeTask == null) {
             combatModeTask = new CombatModeTask(plugin, this, combatController);
@@ -108,6 +123,8 @@ public class CombatPlayer {
         combatDurationSeconds = 0;
         combatTimeRemainingSeconds = 0;
         combatStartTimestamp = 0L;
+
+        updateUserState(isPvP() ? PvpState.ACTIVE : PvpState.INACTIVE, isPvP());
 
         if (cancelTask && combatModeTask != null) {
             combatModeTask.cancel();
@@ -145,6 +162,8 @@ public class CombatPlayer {
                     ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_MISSING);
                 }
                 player.getInventory().setArmorContents(ConfigResource.PVP_EQUIPMENT);
+                updateUserState(PvpState.ACTIVE, true);
+                teleportToCombatSpawn();
                 return true;
             case UN_EQUIPPING:
                 if (isInCombat()) {
@@ -160,9 +179,43 @@ public class CombatPlayer {
                 combatController.removeCombatPlayer(player);
                 player.getInventory().setArmorContents(null);
                 status = CombatStatus.EQUIPPING;
+                updateUserState(PvpState.INACTIVE, false);
+                teleportToSpawn();
                 return true;
         }
 
         return false;
+    }
+
+    private User resolveUser() {
+        return plugin.getUserController().getUser(player.getUniqueId());
+    }
+
+    private void updateUserState(PvpState state, boolean enabled) {
+        User user = resolveUser();
+        if (user == null) {
+            return;
+        }
+
+        user.setPvpState(state);
+        user.setPvpEnabled(enabled);
+    }
+
+    private void teleportToCombatSpawn() {
+        SpawnController spawnController = plugin.getSpawnController();
+        if (spawnController == null) {
+            return;
+        }
+
+        spawnController.toCombatSpawn(player);
+    }
+
+    private void teleportToSpawn() {
+        SpawnController spawnController = plugin.getSpawnController();
+        if (spawnController == null) {
+            return;
+        }
+
+        spawnController.toSpawn(player);
     }
 }

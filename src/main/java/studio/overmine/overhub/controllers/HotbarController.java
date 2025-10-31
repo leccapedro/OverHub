@@ -21,25 +21,32 @@ import org.bukkit.inventory.PlayerInventory;
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.hotbar.Hotbar;
+import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 import studio.overmine.overhub.utilities.item.ItemBuilder;
 
 public class HotbarController {
 
+    private static final int DEFAULT_STORAGE_SIZE = 36;
+
     private final OverHub plugin;
     private final FileConfig hotbarFile;
+    private final FileConfig pvpInventoryFile;
     private final UserController userController;
     private final Map<String, Hotbar> hotbarMap;
     private final ConcurrentMap<UUID, ItemStack[]> lobbyInventorySnapshots;
     private final ConcurrentMap<UUID, ItemStack> lobbyOffhandSnapshots;
+    private volatile ItemStack[] globalPvpLayout;
 
     public HotbarController(OverHub plugin) {
         this.plugin = plugin;
         this.hotbarFile = plugin.getFileConfig("hotbar");
+        this.pvpInventoryFile = plugin.getFileConfig("pvp-inventory");
         this.userController = plugin.getUserController();
         this.hotbarMap = new LinkedHashMap<>();
         this.lobbyInventorySnapshots = new ConcurrentHashMap<>();
         this.lobbyOffhandSnapshots = new ConcurrentHashMap<>();
+        this.globalPvpLayout = new ItemStack[0];
         this.onReload(false);
     }
 
@@ -99,18 +106,27 @@ public class HotbarController {
     public boolean applyPvpHotbar(Player player) {
         UUID uuid = player.getUniqueId();
         PlayerInventory inventory = player.getInventory();
-        int storageSize = inventory.getStorageContents().length;
+        lobbyInventorySnapshots.put(uuid, createStorageSnapshot(inventory));
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            lobbyOffhandSnapshots.put(uuid, cloneItem(inventory.getItemInOffHand()));
+            inventory.setItemInOffHand(null);
+        } else {
+            lobbyOffhandSnapshots.remove(uuid);
+        }
 
-        lobbyInventorySnapshots.put(uuid, cloneStorageContents(inventory.getStorageContents()));
-        lobbyOffhandSnapshots.put(uuid, cloneItem(inventory.getItemInOffHand()));
+        clearStorageContents(inventory);
 
-        inventory.setStorageContents(new ItemStack[storageSize]);
-        inventory.setItemInOffHand(null);
+        boolean hasLayout = false;
+        ItemStack[] globalLayout = getGlobalPvpLayoutClone();
+        if (hasItems(globalLayout)) {
+            setStorageContents(inventory, globalLayout);
+            hasLayout = true;
+        }
 
         User user = userController.getUser(uuid);
-        boolean hasLayout = user != null && user.hasPvpHotbar();
-        if (user != null) {
-            inventory.setStorageContents(user.getPvpHotbarClone());
+        if (user != null && user.hasSavedPvpLayout()) {
+            setStorageContents(inventory, user.getSavedPvpLayoutClone());
+            hasLayout = true;
         }
 
         if (ConfigResource.PVP_SWORD_ITEM != null) {
@@ -127,17 +143,19 @@ public class HotbarController {
     public void restoreLobbyHotbar(Player player) {
         UUID uuid = player.getUniqueId();
         PlayerInventory inventory = player.getInventory();
-        int storageSize = inventory.getStorageContents().length;
-
         ItemStack[] storedContents = lobbyInventorySnapshots.remove(uuid);
         if (storedContents != null) {
-            inventory.setStorageContents(cloneStorageContents(storedContents));
+            setStorageContents(inventory, cloneStorageContents(storedContents));
         } else {
-            inventory.setStorageContents(new ItemStack[storageSize]);
+            clearStorageContents(inventory);
         }
 
-        ItemStack offhandItem = lobbyOffhandSnapshots.remove(uuid);
-        inventory.setItemInOffHand(cloneItem(offhandItem));
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            ItemStack offhandItem = lobbyOffhandSnapshots.remove(uuid);
+            inventory.setItemInOffHand(cloneItem(offhandItem));
+        } else {
+            lobbyOffhandSnapshots.remove(uuid);
+        }
 
         applyLobbyHotbar(player, false);
     }
@@ -176,7 +194,56 @@ public class HotbarController {
         }
     }
 
+    private ItemStack cloneItem(ItemStack itemStack) {
+        return itemStack == null ? null : itemStack.clone();
+    }
+
+    public ItemStack[] createStorageSnapshot(PlayerInventory inventory) {
+        return cloneStorageContents(readStorageContents(inventory));
+    }
+
+    private ItemStack[] readStorageContents(PlayerInventory inventory) {
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            return inventory.getStorageContents();
+        }
+
+        int storageSize = inventory.getSize();
+        ItemStack[] source = inventory.getContents();
+        ItemStack[] storageContents = new ItemStack[storageSize];
+        if (source == null) {
+            return storageContents;
+        }
+
+        int length = Math.min(storageSize, source.length);
+        for (int i = 0; i < length; i++) {
+            storageContents[i] = source[i];
+        }
+        return storageContents;
+    }
+
+    private void setStorageContents(PlayerInventory inventory, ItemStack[] contents) {
+        int storageSize = getStorageSize(inventory);
+        ItemStack[] normalizedContents = normalizeStorageContents(contents, storageSize);
+
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            inventory.setStorageContents(normalizedContents);
+            return;
+        }
+
+        for (int i = 0; i < storageSize; i++) {
+            inventory.setItem(i, normalizedContents[i]);
+        }
+    }
+
+    private void clearStorageContents(PlayerInventory inventory) {
+        setStorageContents(inventory, new ItemStack[getStorageSize(inventory)]);
+    }
+
     private ItemStack[] cloneStorageContents(ItemStack[] contents) {
+        if (contents == null) {
+            return new ItemStack[0];
+        }
+
         ItemStack[] clone = new ItemStack[contents.length];
         for (int i = 0; i < contents.length; i++) {
             clone[i] = cloneItem(contents[i]);
@@ -184,11 +251,68 @@ public class HotbarController {
         return clone;
     }
 
-    private ItemStack cloneItem(ItemStack itemStack) {
-        return itemStack == null ? null : itemStack.clone();
+    private ItemStack[] normalizeStorageContents(ItemStack[] contents, int size) {
+        ItemStack[] normalized = new ItemStack[size];
+        if (contents == null) {
+            return normalized;
+        }
+
+        int length = Math.min(size, contents.length);
+        for (int i = 0; i < length; i++) {
+            normalized[i] = cloneItem(contents[i]);
+        }
+        return normalized;
+    }
+
+    private int getStorageSize(PlayerInventory inventory) {
+        if (BukkitUtil.SERVER_VERSION >= 9) {
+            return inventory.getStorageContents().length;
+        }
+        return inventory.getSize();
+    }
+
+    public ItemStack[] getGlobalPvpLayoutClone() {
+        return cloneStorageContents(globalPvpLayout);
+    }
+
+    public boolean hasGlobalPvpLayout() {
+        return hasItems(globalPvpLayout);
+    }
+
+    public synchronized void saveGlobalPvpLayout(ItemStack[] contents) {
+        if (pvpInventoryFile == null) {
+            return;
+        }
+
+        int size = contents != null ? contents.length : DEFAULT_STORAGE_SIZE;
+        ItemStack[] normalized = normalizeStorageContents(contents, size);
+
+        pvpInventoryFile.set("layout.size", size);
+
+        pvpInventoryFile.set("layout.hotbar", null);
+        ConfigurationSection layoutSection = pvpInventoryFile.getConfiguration().createSection("layout.hotbar");
+
+        for (int i = 0; i < normalized.length; i++) {
+            layoutSection.set(String.valueOf(i), normalized[i]);
+        }
+
+        pvpInventoryFile.save();
+        globalPvpLayout = cloneStorageContents(normalized);
+    }
+
+    public void migrateLegacyPvpLayout(ItemStack[] layout) {
+        if (!hasGlobalPvpLayout() && hasItems(layout)) {
+            saveGlobalPvpLayout(layout);
+            plugin.getLogger().info("Migrated legacy PvP layout to data/pvp-inventory.yml");
+        }
     }
 
     public final void onReload(boolean reload) {
+        if (pvpInventoryFile != null) {
+            pvpInventoryFile.reload();
+            loadGlobalPvpLayout();
+        }
+
         hotbarMap.clear();
 
         ConfigurationSection defaultsSection = hotbarFile.getConfiguration().getConfigurationSection("defaults");
@@ -222,5 +346,53 @@ public class HotbarController {
         });
 
         if (reload) Bukkit.getOnlinePlayers().forEach(this::giveHotbar);
+    }
+
+    private void loadGlobalPvpLayout() {
+        ConfigurationSection layoutSection = pvpInventoryFile.getConfiguration().getConfigurationSection("layout.hotbar");
+        int fallbackSize = Math.max(DEFAULT_STORAGE_SIZE, pvpInventoryFile.getConfiguration().getInt("layout.size", DEFAULT_STORAGE_SIZE));
+        globalPvpLayout = readLayout(layoutSection, fallbackSize);
+    }
+
+    private ItemStack[] readLayout(ConfigurationSection section, int fallbackSize) {
+        if (section == null || section.getKeys(false).isEmpty()) {
+            return new ItemStack[0];
+        }
+
+        int maxIndex = section.getKeys(false).stream()
+                .map(key -> {
+                    try {
+                        return Integer.parseInt(key);
+                    } catch (NumberFormatException ex) {
+                        return -1;
+                    }
+                })
+                .filter(index -> index >= 0)
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(-1);
+
+        if (maxIndex < 0) {
+            return new ItemStack[0];
+        }
+
+        int size = Math.max(fallbackSize, maxIndex + 1);
+        ItemStack[] layout = new ItemStack[size];
+        for (int i = 0; i < size; i++) {
+            layout[i] = section.getItemStack(String.valueOf(i));
+        }
+        return layout;
+    }
+
+    private boolean hasItems(ItemStack[] contents) {
+        if (contents == null) {
+            return false;
+        }
+        for (ItemStack itemStack : contents) {
+            if (itemStack != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -5,11 +5,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.resources.Resource;
 import studio.overmine.overhub.models.scoreboard.ScoreboardModel;
+import studio.overmine.overhub.models.user.types.PvpState;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +23,8 @@ public class ScoreboardResource extends Resource {
     public static long SCOREBOARD_TITLE_ANIMATION_INTERVAL, SCOREBOARD_FOOTER_ANIMATION_INTERVAL;
     public static List<String> SCOREBOARD_TITLE_ANIMATION_LINES, SCOREBOARD_FOOTER_ANIMATION_LINES;
     public static ScoreboardModel SCOREBOARD_MODEL;
+    public static Map<PvpState, String> SCOREBOARD_PVP_STATE_LABELS = Collections.emptyMap();
+    public static Map<PvpState, String> SCOREBOARD_PVP_COMBAT_LEFT_LABELS = Collections.emptyMap();
 
     public ScoreboardResource(OverHub plugin) {
         super(plugin);
@@ -65,5 +69,31 @@ public class ScoreboardResource extends Resource {
             footerLines = Collections.singletonList("&7server.net");
         }
         SCOREBOARD_FOOTER_ANIMATION_LINES = ChatUtil.translate(footerLines);
+
+        ConfigurationSection stateLabelsSection = configuration.getConfigurationSection("pvp.state-labels");
+        Map<PvpState, String> stateLabels = new EnumMap<>(PvpState.class);
+        if (stateLabelsSection != null) {
+            for (PvpState state : PvpState.values()) {
+                String key = state.name().toLowerCase(Locale.ROOT);
+                String label = stateLabelsSection.getString(key);
+                if (label != null && !label.trim().isEmpty()) {
+                    stateLabels.put(state, ChatUtil.translate(label));
+                }
+            }
+        }
+        SCOREBOARD_PVP_STATE_LABELS = Collections.unmodifiableMap(stateLabels);
+
+        ConfigurationSection combatLeftLabelsSection = configuration.getConfigurationSection("pvp.combat-left-labels");
+        Map<PvpState, String> combatLeftLabels = new EnumMap<>(PvpState.class);
+        if (combatLeftLabelsSection != null) {
+            for (PvpState state : PvpState.values()) {
+                String key = state.name().toLowerCase(Locale.ROOT);
+                String label = combatLeftLabelsSection.getString(key);
+                if (label != null && !label.trim().isEmpty()) {
+                    combatLeftLabels.put(state, ChatUtil.translate(label));
+                }
+            }
+        }
+        SCOREBOARD_PVP_COMBAT_LEFT_LABELS = Collections.unmodifiableMap(combatLeftLabels);
     }
 }

@@ -1,14 +1,17 @@
 package studio.overmine.overhub.models.user.storage;
 
+import java.util.UUID;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+
 import studio.overmine.overhub.OverHub;
+import studio.overmine.overhub.controllers.HotbarController;
 import studio.overmine.overhub.models.user.IUser;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.models.user.VisibilityType;
+import studio.overmine.overhub.models.user.types.PvpState;
 import studio.overmine.overhub.utilities.FileConfig;
-
-import java.util.UUID;
 
 public class UserFlatFile implements IUser {
 
@@ -41,14 +44,33 @@ public class UserFlatFile implements IUser {
         user.setName(section.getString("name"));
         user.setVisibilityType(VisibilityType.valueOf(section.getString("visibility")));
         user.setParkourHS(section.getInt("parkour-score"));
+        user.setPvpEnabled(section.getBoolean("pvp.enabled"));
+        user.setPvpState(PvpState.fromString(section.getString("pvp.state")));
+        user.setPvpKills(section.getInt("pvp.kills"));
+        user.setPvpKillStreak(section.getInt("pvp.kill-streak"));
+        user.setLastHitBy(section.getString("pvp.last-hit-by"));
 
-        ConfigurationSection pvpHotbarSection = section.getConfigurationSection("pvp-layout.hotbar");
-        if (pvpHotbarSection != null) {
-            ItemStack[] hotbar = new ItemStack[36];
-            for (int i = 0; i < hotbar.length; i++) {
-                hotbar[i] = pvpHotbarSection.getItemStack(String.valueOf(i));
+        ConfigurationSection pvpLayoutSection = section.getConfigurationSection("pvp.layout.hotbar");
+        if (pvpLayoutSection == null) {
+            pvpLayoutSection = section.getConfigurationSection("pvp-layout.hotbar");
+        }
+        if (pvpLayoutSection != null) {
+            ItemStack[] layout = new ItemStack[36];
+            boolean hasItems = false;
+            for (int i = 0; i < layout.length; i++) {
+                ItemStack itemStack = pvpLayoutSection.getItemStack(String.valueOf(i));
+                layout[i] = itemStack;
+                if (itemStack != null) {
+                    hasItems = true;
+                }
             }
-            user.setPvpHotbar(hotbar);
+
+            if (hasItems) {
+                HotbarController hotbarController = plugin.getHotbarController();
+                if (hotbarController != null) {
+                    hotbarController.migrateLegacyPvpLayout(layout);
+                }
+            }
         }
     }
 
@@ -59,20 +81,14 @@ public class UserFlatFile implements IUser {
         section.set("name", user.getName());
         section.set("visibility", user.getVisibilityType().name());
         section.set("parkour-score", user.getParkourHS());
+        section.set("pvp.enabled", user.isPvpEnabled());
+        section.set("pvp.state", user.getPvpState().name());
+        section.set("pvp.kills", user.getPvpKills());
+        section.set("pvp.kill-streak", user.getPvpKillStreak());
+        section.set("pvp.last-hit-by", user.getLastHitBy());
 
-        ConfigurationSection layoutSection = section.getConfigurationSection("pvp-layout.hotbar");
-        if (layoutSection != null) {
-            for (String key : layoutSection.getKeys(false)) {
-                layoutSection.set(key, null);
-            }
-        }
-
-        ItemStack[] hotbar = user.getPvpHotbar();
-        if (hotbar != null) {
-            for (int i = 0; i < hotbar.length; i++) {
-                section.set("pvp-layout.hotbar." + i, hotbar[i]);
-            }
-        }
+        section.set("pvp-layout.hotbar", null);
+        section.set("pvp.layout.hotbar", null);
 
         userDataFile.save();
     }

@@ -91,9 +91,27 @@ public class FileConfig {
     }
 
     public ItemStack getItemStack(String path) {
-        return new ItemBuilder(getString(path + ".material"))
-                .setDisplayName(getString(path + ".name"))
-                .setLore(getStringList(path + ".lore"))
+        String materialPath = path + ".material";
+
+        if (!configuration.contains(materialPath)) {
+            plugin.getLogger().warning("Missing material definition at '" + materialPath + "' in " + file.getName() + ". Skipping item creation.");
+            return null;
+        }
+
+        String materialName = configuration.getString(materialPath);
+        ItemBuilder builder = new ItemBuilder(materialName);
+
+        String displayName = getString(path + ".name");
+        if (displayName != null) {
+            builder.setDisplayName(displayName);
+        }
+
+        List<String> lore = getStringList(path + ".lore");
+        if (lore != null) {
+            builder.setLore(lore);
+        }
+
+        return builder
                 .addEnchantments(getConfigurationSection(path + ".enchants"))
                 .addUnbreakable()
                 .setModelData(getInt(path + ".model-data"))

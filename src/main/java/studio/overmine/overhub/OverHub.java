@@ -8,25 +8,42 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import lombok.Getter;
+import studio.overmine.overhub.commands.main.OverHubCommand;
 import studio.overmine.overhub.commands.parkour.ParkourCommand;
 import studio.overmine.overhub.commands.pvp.PvpCommand;
+import studio.overmine.overhub.commands.spawn.SetSpawnCommand;
+import studio.overmine.overhub.commands.spawn.SpawnCommand;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.ScoreboardResource;
 import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import studio.overmine.overhub.commands.main.OverHubCommand;
-import studio.overmine.overhub.commands.spawn.SetSpawnCommand;
-import studio.overmine.overhub.commands.spawn.SpawnCommand;
 import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.FileConfig;
-import lombok.Getter;
 
 @Getter
 public class OverHub extends JavaPlugin {
+
+    private static final String[] STARTUP_BANNER = {
+            "                              ",
+            "&9      ___           ___     ",
+            "&9     /\\  \\         /\\__\\    ",
+            "&9    /::\\  \\       /:/  /    ",
+            "&9   /:/\\:\\  \\     /:/__/       &fOverHub &7made by &fOverMine Studios",
+            "&9  /:/  \\:\\  \\   /::\\  \\ ___   ",
+            "&9 /:/__/ \\:\\__\\ /:/\\:\\  /\\__\\  &fForked &7by &frhylow &7(&f@leccapedro&7)",
+            "&9 \\:\\  \\ /:/  / \\/__\\:\\/:/  /  &fVersion: &71.0.3-SNAPSHOT",
+            "&9  \\:\\  /:/  /       \\::/  /   &fDiscord: &7https://discord.gg/gw7UcDPfBD",
+            "&9   \\:\\/:/  /        /:/  /  ",
+            "&9    \\::/  /        /:/  /   ",
+            "&9     \\___/         \\___/     ",
+            "                              "
+    };
 
     private Map<String, FileConfig> fileConfigs;
     private ResourceController resourceController;
@@ -39,6 +56,7 @@ public class OverHub extends JavaPlugin {
     private CombatController combatController;
     private BossBarController bossBarController;
     private ParkourController parkourController;
+    private PvpPlaceholderExpansion pvpPlaceholderExpansion;
 
     @Override
     public void onLoad() {
@@ -52,6 +70,7 @@ public class OverHub extends JavaPlugin {
         this.fileConfigs.put("config", new FileConfig(this, "config.yml"));
         this.fileConfigs.put("language", new FileConfig(this, "language.yml"));
         this.fileConfigs.put("hotbar", new FileConfig(this, "hotbar.yml"));
+        this.fileConfigs.put("pvp-inventory", new FileConfig(this, "data/pvp-inventory.yml"));
         this.fileConfigs.put("scoreboard", new FileConfig(this, "scoreboard.yml"));
         this.fileConfigs.put("server-selector", new FileConfig(this, "selector/server/server-selector.yml"));
         this.fileConfigs.put("lobby-selector", new FileConfig(this, "selector/lobby/lobby-selector.yml"));
@@ -121,11 +140,27 @@ public class OverHub extends JavaPlugin {
         PacketEvents.getAPI().init();
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            this.pvpPlaceholderExpansion = new PvpPlaceholderExpansion(this);
+            this.pvpPlaceholderExpansion.register();
+        }
+
+        for (String bannerLine : STARTUP_BANNER) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', bannerLine));
+        }
+
+        getLogger().info("OverHub enabled successfully.");
     }
 
     @Override
     public void onDisable() {
         PacketEvents.getAPI().terminate();
+
+        if (this.pvpPlaceholderExpansion != null) {
+            this.pvpPlaceholderExpansion.unregister();
+            this.pvpPlaceholderExpansion = null;
+        }
 
         if (this.fastBoardController != null) this.fastBoardController.onDisable();
         if (this.parkourController != null) this.parkourController.onDisable();

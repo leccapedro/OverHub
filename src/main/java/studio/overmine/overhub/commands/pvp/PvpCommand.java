@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.commands.pvp.subcommands.PvpSetInventoryCommand;
+import studio.overmine.overhub.commands.pvp.subcommands.PvpSetSpawnCommand;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.command.SubCommand;
 import studio.overmine.overhub.utilities.command.SubCommandHelper;
@@ -24,10 +25,12 @@ public class PvpCommand implements CommandExecutor, TabCompleter {
 
     public PvpCommand(OverHub plugin) {
         SubCommand setInventoryCommand = new PvpSetInventoryCommand(plugin);
+        SubCommand setSpawnCommand = new PvpSetSpawnCommand(plugin);
         this.subCommands = SubCommandHelper.of(
                 new AbstractMap.SimpleEntry<>("setinventory", setInventoryCommand),
                 new AbstractMap.SimpleEntry<>("setinv", setInventoryCommand),
-                new AbstractMap.SimpleEntry<>("save", setInventoryCommand)
+                new AbstractMap.SimpleEntry<>("save", setInventoryCommand),
+                new AbstractMap.SimpleEntry<>("setspawn", setSpawnCommand)
         );
     }
 

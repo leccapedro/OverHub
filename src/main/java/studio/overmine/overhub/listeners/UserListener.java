@@ -55,6 +55,7 @@ public class UserListener implements Listener {
         User user = userController.getUser(player.getUniqueId());
 
         if (user != null) {
+            userController.saveUser(user);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> userController.destroyUser(user));
         }
     }

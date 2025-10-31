@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
+import studio.overmine.overhub.controllers.HotbarController;
 import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
@@ -50,8 +51,10 @@ public class PvpSetInventoryCommand extends SubCommand {
             return;
         }
 
-        ItemStack[] storageContents = player.getInventory().getStorageContents();
-        user.setPvpHotbar(storageContents);
+        HotbarController hotbarController = plugin.getHotbarController();
+        ItemStack[] storageContents = hotbarController.createStorageSnapshot(player.getInventory());
+        hotbarController.saveGlobalPvpLayout(storageContents);
+        user.setSavedPvpLayout(null);
         userController.saveUser(user);
 
         ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_SAVED);

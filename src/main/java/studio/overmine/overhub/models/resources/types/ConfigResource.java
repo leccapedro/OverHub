@@ -28,8 +28,8 @@ public class ConfigResource extends Resource {
     public static int PVP_EXIT_ITEM_SLOT;
     public static ItemStack PVP_EXIT_ITEM;
     public static ItemStack[] PVP_EQUIPMENT;
-    public static boolean PVP_SPAWN_ENABLED;
-    public static String PVP_SPAWN_LOCATION;
+    public static boolean COMBAT_SPAWN_ENABLED;
+    public static String COMBAT_SPAWN_LOCATION;
     public static boolean BOSS_BAR_SYSTEM_ENABLED;
     public static boolean PARKOUR_SYSTEM_ENABLED;
     public static List<String> PARKOUR_SYSTEM_STREAK_COMMANDS;
@@ -63,13 +63,21 @@ public class ConfigResource extends Resource {
                 configFile.getItemStack("pvp-mode.equipment.chestplate"),
                 configFile.getItemStack("pvp-mode.equipment.helmet")
         };
-        ConfigurationSection spawnSection = configFile.getConfiguration().getConfigurationSection("pvp-mode.spawn");
-        if (spawnSection != null) {
-            PVP_SPAWN_ENABLED = spawnSection.getBoolean("enabled");
-            PVP_SPAWN_LOCATION = spawnSection.getString("location");
+        ConfigurationSection combatSpawnSection = configFile.getConfiguration().getConfigurationSection("combat-spawn");
+        if (combatSpawnSection != null) {
+            COMBAT_SPAWN_ENABLED = combatSpawnSection.getBoolean("enabled");
+            COMBAT_SPAWN_LOCATION = combatSpawnSection.getString("location");
         } else {
-            PVP_SPAWN_ENABLED = false;
-            PVP_SPAWN_LOCATION = "";
+            COMBAT_SPAWN_ENABLED = false;
+            COMBAT_SPAWN_LOCATION = "";
+        }
+
+        if (!COMBAT_SPAWN_ENABLED) {
+            ConfigurationSection legacySpawnSection = configFile.getConfiguration().getConfigurationSection("pvp-mode.spawn");
+            if (legacySpawnSection != null) {
+                COMBAT_SPAWN_ENABLED = legacySpawnSection.getBoolean("enabled");
+                COMBAT_SPAWN_LOCATION = legacySpawnSection.getString("location");
+            }
         }
         BOSS_BAR_SYSTEM_ENABLED = configFile.getBoolean("boss-bar-system.enabled");
         PARKOUR_SYSTEM_ENABLED = configFile.getBoolean("parkour-system.enabled");
