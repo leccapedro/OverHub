@@ -1,4 +1,4 @@
-package studio.overmine.overhub;
+package studio.overmine.overhub.integrations.placeholder;
 
 import java.util.List;
 import java.util.Locale;
@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
 import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
@@ -88,15 +89,7 @@ public class PvpPlaceholderExpansion extends PlaceholderExpansion {
         if (combatPlayer != null && combatPlayer.isInCombat()) {
             return formatCombatTime(combatPlayer.getCombatTimeRemainingSeconds());
         }
-
-        PvpState state = resolveState(user, combatPlayer);
-        if (state != null) {
-            String label = ScoreboardResource.SCOREBOARD_PVP_COMBAT_LEFT_LABELS.get(state);
-            if (label != null) {
-                return label;
-            }
-        }
-        return "";
+        return ScoreboardResource.SCOREBOARD_PVP_NOT_IN_COMBAT_MESSAGE;
     }
 
     private String formatCombatTime(int seconds) {

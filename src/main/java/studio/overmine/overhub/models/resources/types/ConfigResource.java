@@ -27,7 +27,6 @@ public class ConfigResource extends Resource {
     public static ItemStack PVP_SWORD_ITEM;
     public static int PVP_EXIT_ITEM_SLOT;
     public static ItemStack PVP_EXIT_ITEM;
-    public static ItemStack[] PVP_EQUIPMENT;
     public static boolean COMBAT_SPAWN_ENABLED;
     public static String COMBAT_SPAWN_LOCATION;
     public static boolean BOSS_BAR_SYSTEM_ENABLED;
@@ -57,12 +56,6 @@ public class ConfigResource extends Resource {
         PVP_SWORD_ITEM = configFile.getItemStack("pvp-mode.sword");
         PVP_EXIT_ITEM_SLOT = configFile.getInt("pvp-mode.exit-item.slot");
         PVP_EXIT_ITEM = configFile.getItemStack("pvp-mode.exit-item");
-        PVP_EQUIPMENT = new ItemStack[]{
-                configFile.getItemStack("pvp-mode.equipment.boots"),
-                configFile.getItemStack("pvp-mode.equipment.leggings"),
-                configFile.getItemStack("pvp-mode.equipment.chestplate"),
-                configFile.getItemStack("pvp-mode.equipment.helmet")
-        };
         ConfigurationSection combatSpawnSection = configFile.getConfiguration().getConfigurationSection("combat-spawn");
         if (combatSpawnSection != null) {
             COMBAT_SPAWN_ENABLED = combatSpawnSection.getBoolean("enabled");

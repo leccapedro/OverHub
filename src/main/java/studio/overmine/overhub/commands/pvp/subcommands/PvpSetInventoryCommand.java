@@ -14,6 +14,7 @@ import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.models.user.User;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.command.SubCommand;
+import studio.overmine.overhub.utilities.BukkitUtil;
 
 public class PvpSetInventoryCommand extends SubCommand {
 
@@ -56,7 +57,8 @@ public class PvpSetInventoryCommand extends SubCommand {
         PlayerInventory inv = player.getInventory();
         ItemStack[] storageContents = hotbarController.createStorageSnapshot(inv);
         hotbarController.saveGlobalPvpLayout(storageContents);
-        hotbarController.saveGlobalPvpEquipment(inv.getArmorContents(), inv.getItemInOffHand());
+        ItemStack offhand = (BukkitUtil.SERVER_VERSION >= 9) ? inv.getItemInOffHand() : null;
+        hotbarController.saveGlobalPvpEquipment(inv.getArmorContents(), offhand);
         user.setSavedPvpLayout(null);
         userController.saveUser(user);
 

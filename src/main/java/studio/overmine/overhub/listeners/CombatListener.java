@@ -148,7 +148,7 @@ public class CombatListener implements Listener {
 
         if (!combatPlayer.isCombatTaskRunning()) {
             combatPlayer.startCombatTask(plugin, combatController);
-            ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_EXIT_STARTED);
+            // Silent start to avoid double messaging on exit
         }
     }
 

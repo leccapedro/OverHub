@@ -133,9 +133,7 @@ public class HotbarController {
             hasLayout = true;
         }
 
-        if (ConfigResource.PVP_SWORD_ITEM != null) {
-            inventory.setItem(ConfigResource.PVP_SWORD_SLOT, cloneItem(ConfigResource.PVP_SWORD_ITEM));
-        }
+        // Do NOT show activation sword while in PvP mode
 
         if (ConfigResource.PVP_EXIT_ITEM != null) {
             inventory.setItem(ConfigResource.PVP_EXIT_ITEM_SLOT, cloneItem(ConfigResource.PVP_EXIT_ITEM));

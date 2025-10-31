@@ -14,11 +14,10 @@ combat-sword-message:
   in-combat: "&4&lLOBBY &8» &cYou cannot disable PvP while in combat. Time left: &e%time%s&c."
 
 combat-pvp-message:
-  layout-saved: "&4&lLOBBY &8» &aYour PvP hotbar has been saved."
+  layout-saved: "&4&lLOBBY &8» &aYour PvP inventory has been saved."
   layout-missing: "&4&lLOBBY &8» &cNo saved PvP hotbar was found. Using the default layout."
   layout-denied: "&4&lLOBBY &8» &cYou cannot save your PvP hotbar while PvP mode is active."
   exit-in-combat: "&4&lLOBBY &8» &cYou cannot leave PvP while in combat. Wait &e%time%s &cmore."
-  exit-started: "&4&lLOBBY &8» &fDisabling PvP... stay safe!"
 
 parkour-message:
   start: "&4&lPARKOUR &8» &7Try to get over your high-score of &b%score%&7!"
@@ -30,3 +29,6 @@ parkour-message:
 
 visibility-message:
   cooldown: "&cYou must wait %cooldown% before changing your visibility again."
+
+overhub-message:
+  reload: "&aOverHub has been reloaded."

@@ -31,7 +31,7 @@ public class ServerSelectorButton extends Button {
     public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
         playNeutral(player);
 
-        if (!serverSelector.getSubServerSelectors().isEmpty()) {
+        if (serverSelector.isUseSubServers() && !serverSelector.getSubServerSelectors().isEmpty()) {
             SubServerSelectorMenu subServerSelectorMenu = new SubServerSelectorMenu(player, plugin, serverSelector);
             subServerSelectorMenu.open();
             return;

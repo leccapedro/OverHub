@@ -11,6 +11,7 @@ menu:
       commands: {}
 servers:
   default:
+    use-sub-servers: true
     item:
       head: ""
       name: "&6&lDefault Server"

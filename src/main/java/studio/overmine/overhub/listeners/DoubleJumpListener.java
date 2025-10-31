@@ -13,6 +13,9 @@ import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
+import studio.overmine.overhub.OverHub;
+import studio.overmine.overhub.controllers.CombatController;
+import studio.overmine.overhub.models.combat.CombatPlayer;
 
 /**
  * @author Risas
@@ -20,8 +23,10 @@ import java.util.Set;
 public class DoubleJumpListener implements Listener {
 
     private final Set<Player> jumpers;
+    private final OverHub plugin;
 
-    public DoubleJumpListener() {
+    public DoubleJumpListener(OverHub plugin) {
+        this.plugin = plugin;
         this.jumpers = new HashSet<>();
     }
 
@@ -29,7 +34,7 @@ public class DoubleJumpListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+        if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR && !isInPvp(player)) {
             player.setAllowFlight(true);
         }
     }
@@ -40,7 +45,8 @@ public class DoubleJumpListener implements Listener {
 
         if (player.getGameMode() == GameMode.CREATIVE
                 || player.getGameMode() == GameMode.SPECTATOR
-                || jumpers.contains(player)) {
+                || jumpers.contains(player)
+                || isInPvp(player)) {
             return;
         }
 
@@ -63,7 +69,8 @@ public class DoubleJumpListener implements Listener {
 
         if (player.getAllowFlight()
                 || player.getGameMode() == GameMode.CREATIVE
-                || player.getGameMode() == GameMode.SPECTATOR) {
+                || player.getGameMode() == GameMode.SPECTATOR
+                || isInPvp(player)) {
             return;
         }
 
@@ -83,5 +90,13 @@ public class DoubleJumpListener implements Listener {
 
     private boolean blockBelowPlayer(Player player) {
         return player.getLocation().subtract(0, 0.1, 0).getBlock().getType() != Material.AIR;
+    }
+
+    private boolean isInPvp(Player player) {
+        if (plugin == null) return false;
+        CombatController combatController = plugin.getCombatController();
+        if (combatController == null) return false;
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        return combatPlayer != null && combatPlayer.isPvP();
     }
 }

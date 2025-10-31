@@ -55,27 +55,7 @@ pvp-mode:
     name: "&cLeave PvP Mode"
     lore:
       - "&7Click to return to the lobby hotbar"
-  equipment:
-    helmet:
-      name: "&cBattle Helmet"
-      material: DIAMOND_HELMET
-      enchants:
-        protection_environmental: 2
-    chestplate:
-      name: "&cBattle Chestplate"
-      material: DIAMOND_CHESTPLATE
-      enchants:
-        protection_environmental: 2
-    leggings:
-      name: "&cBattle Leggings"
-      material: DIAMOND_LEGGINGS
-      enchants:
-        protection_environmental: 2
-    boots:
-      name: "&cBattle Boots"
-      material: DIAMOND_BOOTS
-      enchants:
-        protection_environmental: 2
+
 
 parkour-system:
   enabled: true

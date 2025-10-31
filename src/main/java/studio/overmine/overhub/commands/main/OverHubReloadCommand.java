@@ -2,6 +2,7 @@ package studio.overmine.overhub.commands.main;
 
 import org.bukkit.command.CommandSender;
 import studio.overmine.overhub.OverHub;
+import studio.overmine.overhub.models.resources.types.LanguageResource;
 import studio.overmine.overhub.utilities.ChatUtil;
 import studio.overmine.overhub.utilities.command.SubCommand;
 
@@ -20,6 +21,10 @@ public class OverHubReloadCommand extends SubCommand {
     @Override
     public void execute(CommandSender sender, String label, String[] args) {
         plugin.onReload();
-        ChatUtil.sendMessage(sender, "&aOverHub has been reloaded.");
+        String message = LanguageResource.OVERHUB_RELOAD_MESSAGE;
+        if (message == null || message.trim().isEmpty()) {
+            message = "&aOverHub has been reloaded.";
+        }
+        ChatUtil.sendMessage(sender, message);
     }
 }

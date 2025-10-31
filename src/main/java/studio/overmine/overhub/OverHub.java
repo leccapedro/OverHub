@@ -25,6 +25,7 @@ import studio.overmine.overhub.models.resources.types.ScoreboardResource;
 import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
 import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.FileConfig;
+import studio.overmine.overhub.integrations.placeholder.PvpPlaceholderExpansion;
 
 @Getter
 public class OverHub extends JavaPlugin {
@@ -108,7 +109,7 @@ public class OverHub extends JavaPlugin {
         pluginManager.registerEvents(new HotbarListener(this), this);
         pluginManager.registerEvents(new PlayerListener(this), this);
         pluginManager.registerEvents(new WorldListener(), this);
-        pluginManager.registerEvents(new DoubleJumpListener(), this);
+        pluginManager.registerEvents(new DoubleJumpListener(this), this);
         pluginManager.registerEvents(new LobbySelectorListener(this), this);
         pluginManager.registerEvents(new CombatListener(this, combatController), this);
 

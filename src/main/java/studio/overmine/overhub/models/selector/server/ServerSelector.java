@@ -28,6 +28,7 @@ public class ServerSelector {
     private final List<String> commands;
     private final List<SubServerSelector> subServerSelectors;
     private final FileConfig subServerFile;
+    private final boolean useSubServers;
 
     public ServerSelector(OverHub plugin, String name, ConfigurationSection section) {
         this.name = name;
@@ -43,6 +44,7 @@ public class ServerSelector {
         this.commands = section.getStringList("commands");
         this.subServerSelectors = new ArrayList<>();
         this.subServerFile = new FileConfig(plugin, "selector/server/sub-server/" + name + "-server.yml");
+        this.useSubServers = section.contains("use-sub-servers") ? section.getBoolean("use-sub-servers") : true;
 
         this.loadOrCreateFolder();
 

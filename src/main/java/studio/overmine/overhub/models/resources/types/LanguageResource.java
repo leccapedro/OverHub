@@ -16,11 +16,12 @@ public class LanguageResource extends Resource {
             COMBAT_SWORD_MESSAGE_EQUIPPED, COMBAT_SWORD_MESSAGE_UN_EQUIPPED,
             COMBAT_SWORD_MESSAGE_IN_COMBAT;
     public static String COMBAT_PVP_LAYOUT_SAVED, COMBAT_PVP_LAYOUT_MISSING,
-            COMBAT_PVP_LAYOUT_DENIED, COMBAT_PVP_EXIT_IN_COMBAT, COMBAT_PVP_EXIT_STARTED;
+            COMBAT_PVP_LAYOUT_DENIED, COMBAT_PVP_EXIT_IN_COMBAT;
     public static String SPAWN_MESSAGE_SET, SPAWN_MESSAGE_TELEPORT;
     public static String PARKOUR_MESSAGE_START, PARKOUR_MESSAGE_STREAK, PARKOUR_MESSAGE_FALL,
             PARKOUR_MESSAGE_NEW_HS, PARKOUR_MESSAGE_NOT_CUBOID, PARKOUR_MESSAGE_ERROR;
     public static String VISIBILITY_MESSAGE_COOLDOWN;
+    public static String OVERHUB_RELOAD_MESSAGE;
 
     public LanguageResource(OverHub plugin) {
         super(plugin);
@@ -41,7 +42,6 @@ public class LanguageResource extends Resource {
         COMBAT_PVP_LAYOUT_MISSING = languageFile.getString("combat-pvp-message.layout-missing");
         COMBAT_PVP_LAYOUT_DENIED = languageFile.getString("combat-pvp-message.layout-denied");
         COMBAT_PVP_EXIT_IN_COMBAT = languageFile.getString("combat-pvp-message.exit-in-combat");
-        COMBAT_PVP_EXIT_STARTED = languageFile.getString("combat-pvp-message.exit-started");
         SPAWN_MESSAGE_SET = languageFile.getString("spawn-message.set");
         SPAWN_MESSAGE_TELEPORT = languageFile.getString("spawn-message.teleport");
         PARKOUR_MESSAGE_START = languageFile.getString("parkour-message.start");
@@ -51,5 +51,6 @@ public class LanguageResource extends Resource {
         PARKOUR_MESSAGE_NOT_CUBOID = languageFile.getString("parkour-message.area-not-defined");
         PARKOUR_MESSAGE_ERROR = languageFile.getString("parkour-message.error");
         VISIBILITY_MESSAGE_COOLDOWN = languageFile.getString("visibility-message.cooldown");
+        OVERHUB_RELOAD_MESSAGE = languageFile.getString("overhub-message.reload");
     }
 }

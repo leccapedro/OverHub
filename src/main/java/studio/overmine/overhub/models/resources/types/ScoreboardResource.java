@@ -24,7 +24,7 @@ public class ScoreboardResource extends Resource {
     public static List<String> SCOREBOARD_TITLE_ANIMATION_LINES, SCOREBOARD_FOOTER_ANIMATION_LINES;
     public static ScoreboardModel SCOREBOARD_MODEL;
     public static Map<PvpState, String> SCOREBOARD_PVP_STATE_LABELS = Collections.emptyMap();
-    public static Map<PvpState, String> SCOREBOARD_PVP_COMBAT_LEFT_LABELS = Collections.emptyMap();
+    public static String SCOREBOARD_PVP_NOT_IN_COMBAT_MESSAGE = "You're not in combat!";
 
     public ScoreboardResource(OverHub plugin) {
         super(plugin);
@@ -83,17 +83,9 @@ public class ScoreboardResource extends Resource {
         }
         SCOREBOARD_PVP_STATE_LABELS = Collections.unmodifiableMap(stateLabels);
 
-        ConfigurationSection combatLeftLabelsSection = configuration.getConfigurationSection("pvp.combat-left-labels");
-        Map<PvpState, String> combatLeftLabels = new EnumMap<>(PvpState.class);
-        if (combatLeftLabelsSection != null) {
-            for (PvpState state : PvpState.values()) {
-                String key = state.name().toLowerCase(Locale.ROOT);
-                String label = combatLeftLabelsSection.getString(key);
-                if (label != null && !label.trim().isEmpty()) {
-                    combatLeftLabels.put(state, ChatUtil.translate(label));
-                }
-            }
+        String notInCombat = configuration.getString("pvp.not-in-combat-message");
+        if (notInCombat != null && !notInCombat.trim().isEmpty()) {
+            SCOREBOARD_PVP_NOT_IN_COMBAT_MESSAGE = ChatUtil.translate(notInCombat);
         }
-        SCOREBOARD_PVP_COMBAT_LEFT_LABELS = Collections.unmodifiableMap(combatLeftLabels);
     }
 }
