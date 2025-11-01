@@ -1,6 +1,7 @@
 package studio.overmine.overhub.models.combat;
 
 import lombok.Getter;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import studio.overmine.overhub.OverHub;
@@ -161,7 +162,10 @@ public class CombatPlayer {
                 if (!hasLayout) {
                     ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_MISSING);
                 }
-                // Armor is now provided by the saved PvP layout (global pvp-inventory.yml)
+                if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+                    player.setAllowFlight(false);
+                    player.setFlying(false);
+                }
                 updateUserState(PvpState.ACTIVE, true);
                 teleportToCombatSpawn();
                 return true;
@@ -178,6 +182,9 @@ public class CombatPlayer {
                 hotbarController.restoreLobbyHotbar(player);
                 combatController.removeCombatPlayer(player);
                 player.getInventory().setArmorContents(null);
+                if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+                    player.setAllowFlight(true);
+                }
                 status = CombatStatus.EQUIPPING;
                 updateUserState(PvpState.INACTIVE, false);
                 teleportToSpawn();
