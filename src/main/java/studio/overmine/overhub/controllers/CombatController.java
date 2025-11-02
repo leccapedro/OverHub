@@ -5,9 +5,9 @@ import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CombatController {
 
@@ -16,7 +16,7 @@ public class CombatController {
 
     public CombatController(OverHub plugin) {
         this.plugin = plugin;
-        this.combats = new HashMap<>();
+        this.combats = new ConcurrentHashMap<>();
     }
 
     public CombatPlayer getCombatPlayer(Player player) {

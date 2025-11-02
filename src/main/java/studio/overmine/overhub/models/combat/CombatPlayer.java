@@ -162,7 +162,8 @@ public class CombatPlayer {
                 if (!hasLayout) {
                     ChatUtil.sendMessage(player, LanguageResource.COMBAT_PVP_LAYOUT_MISSING);
                 }
-                if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+
+                if (player.isOnline() && player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                 }
@@ -179,14 +180,16 @@ public class CombatPlayer {
                 stopCombatTask();
                 stopCombatModeTimer();
 
+                updateUserState(PvpState.INACTIVE, false);
+                status = CombatStatus.EQUIPPING;
+
                 hotbarController.restoreLobbyHotbar(player);
-                combatController.removeCombatPlayer(player);
                 player.getInventory().setArmorContents(null);
-                if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+                if (player.isOnline() && player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
                     player.setAllowFlight(true);
                 }
-                status = CombatStatus.EQUIPPING;
-                updateUserState(PvpState.INACTIVE, false);
+                
+                combatController.removeCombatPlayer(player);
                 teleportToSpawn();
                 return true;
         }

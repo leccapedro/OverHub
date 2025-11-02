@@ -58,7 +58,7 @@ public class CombatTask extends BukkitRunnable {
 
     public void start() {
         long initialDelay = isCooldownMode() ? 20L : 0L;
-        this.runTaskTimerAsynchronously(plugin, initialDelay, 20L);
+        this.runTaskTimer(plugin, initialDelay, 20L);
     }
 
     public void reset() {

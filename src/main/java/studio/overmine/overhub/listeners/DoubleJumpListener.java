@@ -42,9 +42,10 @@ public class DoubleJumpListener implements Listener {
     @EventHandler
     public void onPlayerToggleFlight(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
-
-        if (player.getGameMode() == GameMode.CREATIVE
-                || player.getGameMode() == GameMode.SPECTATOR
+        
+        GameMode gameMode = player.getGameMode();
+        if (gameMode == GameMode.CREATIVE
+                || gameMode == GameMode.SPECTATOR
                 || jumpers.contains(player)
                 || isInPvp(player)) {
             return;
@@ -66,11 +67,16 @@ public class DoubleJumpListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-
+        
+        GameMode gameMode = player.getGameMode();
         if (player.getAllowFlight()
-                || player.getGameMode() == GameMode.CREATIVE
-                || player.getGameMode() == GameMode.SPECTATOR
-                || isInPvp(player)) {
+                || gameMode == GameMode.CREATIVE
+                || gameMode == GameMode.SPECTATOR) {
+            return;
+        }
+        
+        // Cache PvP check to avoid repeated lookups
+        if (isInPvp(player)) {
             return;
         }
 
