@@ -66,9 +66,11 @@ clear-inventory-message:
   clear-inventory-player: "&6{player} &ehas cleared your inventory"
 
 tpall-message:
-  players: "&eAll players have been trained to &6{player}&e!"
-  tpall: "&eTeped all the players towards you."
+  players: "&eAll players have been teleported to &6{player}&e!"
+  tpall: "&eTeleported all the players towards you."
 
 tp-message:
-  tp-message: "&eYou have teped the player."
-  tphere-message: "&eTeped the player towards you."
+  tp-message: "&eYou have teleported to the player."
+  tphere-message: "&eTeleported the player towards you."
+  tp-player-to-player: "&eYou have teleported &6{player1} &eto &6{player2}&e."
+  tp-coordinates: "&eYou have teleported to coordinates &6{x}&e, &6{y}&e, &6{z}&e."

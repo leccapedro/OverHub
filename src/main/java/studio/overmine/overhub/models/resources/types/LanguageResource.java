@@ -29,7 +29,7 @@ public class LanguageResource extends Resource {
     public static String FEED_MESSAGE_FULL, FEED_MESSAGE_SUCCESSFULLY, FEED_MESSAGE_OTHER_SUCCESSFULLY, FEED_MESSAGE_PLAYER_SUCCESSFULLY;
     public static String CLEAR_INVENTORY_MESSAGE_CLEAR_INVENTORY, CLEAR_INVENTORY_MESSAGE_CLEAR_INVENTORY_OTHER, CLEAR_INVENTORY_MESSAGE_CLEAR_INVENTORY_PLAYER;
     public static String TPALL_MESSAGE_PLAYERS, TPALL_MESSAGE_TPALL;
-    public static String TP_MESSAGE_TP_MESSAGE, TP_MESSAGE_TPHERE_MESSAGE;
+    public static String TP_MESSAGE_TP_MESSAGE, TP_MESSAGE_TPHERE_MESSAGE, TP_MESSAGE_TP_PLAYER_TO_PLAYER, TP_MESSAGE_TP_COORDINATES;
 
     public LanguageResource(OverHub plugin) {
         super(plugin);
@@ -87,5 +87,7 @@ public class LanguageResource extends Resource {
         TPALL_MESSAGE_TPALL = languageFile.getString("tpall-message.tpall");
         TP_MESSAGE_TP_MESSAGE = languageFile.getString("tp-message.tp-message");
         TP_MESSAGE_TPHERE_MESSAGE = languageFile.getString("tp-message.tphere-message");
+        TP_MESSAGE_TP_PLAYER_TO_PLAYER = languageFile.getString("tp-message.tp-player-to-player");
+        TP_MESSAGE_TP_COORDINATES = languageFile.getString("tp-message.tp-coordinates");
     }
 }
