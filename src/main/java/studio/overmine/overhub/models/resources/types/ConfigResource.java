@@ -17,6 +17,7 @@ public class ConfigResource extends Resource {
 
     public static String SERVER_NAME;
     public static List<String> WELCOME_MESSAGE;
+    public static boolean ALWAYS_DAY;
     public static boolean CHAT_SYSTEM_ENABLED;
     public static String CHAT_SYSTEM_FORMAT;
     public static boolean PVP_MODE_ENABLED;
@@ -46,6 +47,7 @@ public class ConfigResource extends Resource {
 
         SERVER_NAME = configFile.getString("server-name");
         WELCOME_MESSAGE = configFile.getStringList("welcome-message");
+        ALWAYS_DAY = configFile.getBoolean("always-day");
         CHAT_SYSTEM_ENABLED = configFile.getBoolean("chat-system.enabled");
         CHAT_SYSTEM_FORMAT = configFile.getString("chat-system.format");
         PVP_MODE_ENABLED = configFile.getBoolean("pvp-mode.enabled");

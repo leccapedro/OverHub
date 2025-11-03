@@ -1,5 +1,6 @@
 server-name: "lobby-1"
 spawn-location: ""
+always-day: true
 combat-spawn:
   enabled: true
   location: ""

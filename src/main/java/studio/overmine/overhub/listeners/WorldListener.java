@@ -9,6 +9,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import studio.overmine.overhub.models.resources.types.ConfigResource;
 
 public class WorldListener implements Listener {
 
@@ -43,6 +45,16 @@ public class WorldListener implements Listener {
     public void onMobSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        // Aplicar configuración de día constante a mundos que se carguen después
+        if (ConfigResource.ALWAYS_DAY) {
+            org.bukkit.World world = event.getWorld();
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setTime(6000);
         }
     }
 }

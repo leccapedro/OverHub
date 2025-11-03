@@ -170,8 +170,22 @@ public class OverHub extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("tphere")).setExecutor(tphereCommand);
         Objects.requireNonNull(this.getCommand("tphere")).setTabCompleter(tphereCommand);
 
-        Bukkit.getScheduler().runTaskLater(this, () ->
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
+        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true");
+                
+                // Establecer siempre día si está habilitado
+                if (ConfigResource.ALWAYS_DAY) {
+                    for (org.bukkit.World world : Bukkit.getWorlds()) {
+                        // Desactivar el ciclo natural del tiempo para evitar lag
+                        world.setGameRuleValue("doDaylightCycle", "false");
+                        // Establecer el tiempo a mediodía
+                        world.setTime(6000);
+                    }
+                }
+            }
+        }, 20L);
 
         PacketEvents.getAPI().init();
 
