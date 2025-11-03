@@ -63,3 +63,4 @@ footer-animation:
 # Combat left message
 pvp:
   not-in-combat-message: "You're not in combat!"
+  combat-time-color: "&e" # Combat timer color (example: &e, &c, &a...)

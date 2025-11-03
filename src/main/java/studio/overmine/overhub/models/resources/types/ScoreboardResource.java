@@ -25,6 +25,7 @@ public class ScoreboardResource extends Resource {
     public static ScoreboardModel SCOREBOARD_MODEL;
     public static Map<PvpState, String> SCOREBOARD_PVP_STATE_LABELS = Collections.emptyMap();
     public static String SCOREBOARD_PVP_NOT_IN_COMBAT_MESSAGE = "You're not in combat!";
+    public static String SCOREBOARD_PVP_COMBAT_TIME_COLOR = "&e";
 
     public ScoreboardResource(OverHub plugin) {
         super(plugin);
@@ -86,6 +87,11 @@ public class ScoreboardResource extends Resource {
         String notInCombat = configuration.getString("pvp.not-in-combat-message");
         if (notInCombat != null && !notInCombat.trim().isEmpty()) {
             SCOREBOARD_PVP_NOT_IN_COMBAT_MESSAGE = ChatUtil.translate(notInCombat);
+        }
+
+        String combatTimeColor = configuration.getString("pvp.combat-time-color", "&e");
+        if (combatTimeColor != null && !combatTimeColor.trim().isEmpty()) {
+            SCOREBOARD_PVP_COMBAT_TIME_COLOR = ChatUtil.translate(combatTimeColor);
         }
     }
 }

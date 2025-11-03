@@ -152,6 +152,33 @@ public class HotbarController {
         return hasLayout;
     }
 
+    public void resetPvpInventory(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        
+        clearStorageContents(inventory);
+        
+        ItemStack[] globalLayout = getGlobalPvpLayoutClone();
+        if (hasItems(globalLayout)) {
+            setStorageContents(inventory, globalLayout);
+        }
+        
+        User user = userController.getUser(player.getUniqueId());
+        if (user != null && user.hasSavedPvpLayout()) {
+            setStorageContents(inventory, user.getSavedPvpLayoutClone());
+        }
+        
+        if (ConfigResource.PVP_EXIT_ITEM != null) {
+            inventory.setItem(ConfigResource.PVP_EXIT_ITEM_SLOT, cloneItem(ConfigResource.PVP_EXIT_ITEM));
+        }
+        
+        if (globalPvpArmor != null) {
+            inventory.setArmorContents(cloneStorageContents(globalPvpArmor));
+        }
+        if (BukkitUtil.SERVER_VERSION >= 9 && globalPvpOffhand != null) {
+            inventory.setItemInOffHand(cloneItem(globalPvpOffhand));
+        }
+    }
+
     public void restoreLobbyHotbar(Player player) {
         UUID uuid = player.getUniqueId();
         PlayerInventory inventory = player.getInventory();

@@ -21,4 +21,33 @@ commands:
     permission: "overhub.command.pvp"
     description: "PvP command"
     aliases: ["combat"]
+  gamemode:
+    permission: "overhub.command.gamemode"
+    description: "Gamemode command"
+    aliases: ["gm"]
+  fly:
+    permission: "overhub.command.fly"
+    description: "Fly command"
+  heal:
+    permission: "overhub.command.heal"
+    description: "Heal command"
+    aliases: ["health"]
+  feed:
+    permission: "overhub.command.feed"
+    description: "Feed command"
+  clearinventory:
+    permission: "overhub.command.clearinventory"
+    description: "Clear inventory command"
+    aliases: ["ci", "clear"]
+  tpall:
+    permission: "overhub.command.tpall"
+    description: "Teleport all players command"
+  tp:
+    permission: "overhub.command.tp"
+    description: "Teleport command"
+    aliases: ["teleport"]
+  tphere:
+    permission: "overhub.command.tphere"
+    description: "Teleport here command"
+    aliases: ["tph"]
 

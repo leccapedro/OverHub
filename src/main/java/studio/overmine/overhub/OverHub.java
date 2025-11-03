@@ -9,10 +9,12 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
+import studio.overmine.overhub.commands.admin.*;
 import studio.overmine.overhub.commands.main.OverHubCommand;
 import studio.overmine.overhub.commands.parkour.ParkourCommand;
 import studio.overmine.overhub.commands.pvp.PvpCommand;
@@ -20,9 +22,12 @@ import studio.overmine.overhub.commands.spawn.SetSpawnCommand;
 import studio.overmine.overhub.commands.spawn.SpawnCommand;
 import studio.overmine.overhub.controllers.*;
 import studio.overmine.overhub.listeners.*;
+import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.resources.types.ConfigResource;
 import studio.overmine.overhub.models.resources.types.ScoreboardResource;
 import studio.overmine.overhub.models.scoreboard.FastBoardProvider;
+import studio.overmine.overhub.models.user.User;
+import studio.overmine.overhub.models.user.types.PvpState;
 import studio.overmine.overhub.utilities.BukkitUtil;
 import studio.overmine.overhub.utilities.FileConfig;
 import studio.overmine.overhub.integrations.placeholder.PvpPlaceholderExpansion;
@@ -38,7 +43,7 @@ public class OverHub extends JavaPlugin {
             "&9   /:/\\:\\  \\     /:/__/       &fOverHub &7made by &fOverMine Studios",
             "&9  /:/  \\:\\  \\   /::\\  \\ ___   ",
             "&9 /:/__/ \\:\\__\\ /:/\\:\\  /\\__\\  &fForked &7by &frhylow &7(&f@leccapedro&7)",
-            "&9 \\:\\  \\ /:/  / \\/__\\:\\/:/  /  &fVersion: &71.0.3-SNAPSHOT",
+            "&9 \\:\\  \\ /:/  / \\/__\\:\\/:/  /  &fVersion: &71.0.4-SNAPSHOT",
             "&9  \\:\\  /:/  /       \\::/  /   &fDiscord: &7https://discord.gg/gw7UcDPfBD",
             "&9   \\:\\/:/  /        /:/  /  ",
             "&9    \\::/  /        /:/  /   ",
@@ -135,6 +140,36 @@ public class OverHub extends JavaPlugin {
             Objects.requireNonNull(this.getCommand("parkour")).setExecutor(new ParkourCommand(parkourController));
         }
 
+        GamemodeCommand gamemodeCommand = new GamemodeCommand();
+        Objects.requireNonNull(this.getCommand("gamemode")).setExecutor(gamemodeCommand);
+        Objects.requireNonNull(this.getCommand("gamemode")).setTabCompleter(gamemodeCommand);
+        
+        FlyCommand flyCommand = new FlyCommand();
+        Objects.requireNonNull(this.getCommand("fly")).setExecutor(flyCommand);
+        Objects.requireNonNull(this.getCommand("fly")).setTabCompleter(flyCommand);
+        
+        HealthCommand healthCommand = new HealthCommand();
+        Objects.requireNonNull(this.getCommand("heal")).setExecutor(healthCommand);
+        Objects.requireNonNull(this.getCommand("heal")).setTabCompleter(healthCommand);
+        
+        FeedCommand feedCommand = new FeedCommand();
+        Objects.requireNonNull(this.getCommand("feed")).setExecutor(feedCommand);
+        Objects.requireNonNull(this.getCommand("feed")).setTabCompleter(feedCommand);
+        
+        ClearInventoryCommand clearInventoryCommand = new ClearInventoryCommand();
+        Objects.requireNonNull(this.getCommand("clearinventory")).setExecutor(clearInventoryCommand);
+        Objects.requireNonNull(this.getCommand("clearinventory")).setTabCompleter(clearInventoryCommand);
+        
+        Objects.requireNonNull(this.getCommand("tpall")).setExecutor(new TpallCommand());
+        
+        TpCommand tpCommand = new TpCommand();
+        Objects.requireNonNull(this.getCommand("tp")).setExecutor(tpCommand);
+        Objects.requireNonNull(this.getCommand("tp")).setTabCompleter(tpCommand);
+        
+        TphereCommand tphereCommand = new TphereCommand();
+        Objects.requireNonNull(this.getCommand("tphere")).setExecutor(tphereCommand);
+        Objects.requireNonNull(this.getCommand("tphere")).setTabCompleter(tphereCommand);
+
         Bukkit.getScheduler().runTaskLater(this, () ->
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule keepInventory true"), 20L);
 
@@ -156,6 +191,23 @@ public class OverHub extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Desactivar PvP de todos los jugadores antes de apagar el servidor
+        if (this.combatController != null && this.userController != null) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+                if (combatPlayer != null) {
+                    combatController.removeCombatPlayer(player);
+                }
+
+                User user = userController.getUser(player.getUniqueId());
+                if (user != null && user.isPvpEnabled()) {
+                    user.setPvpEnabled(false);
+                    user.setPvpState(PvpState.INACTIVE);
+                    userController.saveUser(user);
+                }
+            }
+        }
+
         PacketEvents.getAPI().terminate();
 
         if (this.pvpPlaceholderExpansion != null) {

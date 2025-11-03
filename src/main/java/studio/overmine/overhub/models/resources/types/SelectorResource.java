@@ -30,15 +30,37 @@ public class SelectorResource extends Resource {
         SERVER_SELECTOR_MENU_ROWS = serverSelectorFile.getInt("menu.rows");
         SERVER_SELECTOR_MENU_DECORATIONS = new HashSet<>();
 
+        Set<Integer> serverOccupiedSlots = new HashSet<>();
+        ConfigurationSection serversSection = serverSelectorFile.getConfiguration().getConfigurationSection("servers");
+        if (serversSection != null) {
+            for (String serverName : serversSection.getKeys(false)) {
+                ConfigurationSection serverSection = serversSection.getConfigurationSection(serverName);
+                if (serverSection != null && serverSection.contains("item.slot")) {
+                    serverOccupiedSlots.add(serverSection.getInt("item.slot"));
+                }
+            }
+        }
+
         ConfigurationSection serverSelectorDecorationSection = serverSelectorFile.getConfiguration().getConfigurationSection("menu.decorations");
-        DecorationUtil.registerDecorations(serverSelectorDecorationSection, SERVER_SELECTOR_MENU_DECORATIONS);
+        DecorationUtil.registerDecorations(serverSelectorDecorationSection, SERVER_SELECTOR_MENU_DECORATIONS, SERVER_SELECTOR_MENU_ROWS, serverOccupiedSlots);
 
         LOBBY_SELECTOR_MENU_TITLE = lobbySelectorFile.getString("menu.title");
         LOBBY_SELECTOR_MENU_ROWS = lobbySelectorFile.getInt("menu.rows");
         LOBBY_SELECTOR_MENU_DECORATIONS = new HashSet<>();
 
+        Set<Integer> lobbyOccupiedSlots = new HashSet<>();
+        ConfigurationSection lobbiesSection = lobbySelectorFile.getConfiguration().getConfigurationSection("lobbies");
+        if (lobbiesSection != null) {
+            for (String lobbyName : lobbiesSection.getKeys(false)) {
+                ConfigurationSection lobbySection = lobbiesSection.getConfigurationSection(lobbyName);
+                if (lobbySection != null && lobbySection.contains("item.slot")) {
+                    lobbyOccupiedSlots.add(lobbySection.getInt("item.slot"));
+                }
+            }
+        }
+
         ConfigurationSection lobbySelectorDecorationSection = lobbySelectorFile.getConfiguration().getConfigurationSection("menu.decorations");
-        DecorationUtil.registerDecorations(lobbySelectorDecorationSection, LOBBY_SELECTOR_MENU_DECORATIONS);
+        DecorationUtil.registerDecorations(lobbySelectorDecorationSection, LOBBY_SELECTOR_MENU_DECORATIONS, LOBBY_SELECTOR_MENU_ROWS, lobbyOccupiedSlots);
 
         LOBBY_SELECTOR_MENU_MODERN = lobbySelectorFile.getBoolean("menu.modern");
     }

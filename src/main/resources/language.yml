@@ -18,6 +18,8 @@ combat-pvp-message:
   layout-missing: "&4&lLOBBY &8» &cNo saved PvP hotbar was found. Using the default layout."
   layout-denied: "&4&lLOBBY &8» &cYou cannot save your PvP hotbar while PvP mode is active."
   exit-in-combat: "&4&lLOBBY &8» &cYou cannot leave PvP while in combat. Wait &e%time%s &cmore."
+  kill: "&4&lLOBBY &8» &aYou have killed &6{victim} &7(&e{kills} kills&7, &e{streak} streak&7)"
+  death: "&4&lLOBBY &8» &cYou have been killed by &6{killer}"
 
 parkour-message:
   start: "&4&lPARKOUR &8» &7Try to get over your high-score of &b%score%&7!"
@@ -32,3 +34,41 @@ visibility-message:
 
 overhub-message:
   reload: "&aOverHub has been reloaded."
+
+gamemode-message:
+  gamemode: "&6{name} &eyour gamemode is updated at &6{gamemode}"
+  gamemode-change: "&6{name} &ehave change gamemode &6{other_gamemode} &eto &6{other_name}"
+  player-change-gamemode: "&6{name} &ehas player change your gamemode at &6{gamemode}&e!"
+
+fly-message:
+  enabled: "&aYour fly is activated"
+  disabled: "&cYour fly is disactivated"
+  enabled-other: "&aYou have activated the fly of {player}"
+  enabled-player: "&aThe player {player} has activated the fly"
+  disabled-other: "&cYou have disactivated the fly of {player}"
+  disabled-player: "&cThe player {player} has disabled the fly"
+
+health-message:
+  full: "&cThe life bar is full"
+  successfully: "&aYour life has complete!"
+  other-successfully: "&eThe player &6{name}&f has healed your life"
+  player-successfully: "&eYou have successfully healed &6{name}!"
+
+feed-message:
+  full: "&cYour food bar is full"
+  successfully: "&eYour food bar has been &6filled! &a:O"
+  other-successfully: "&eYou have filled the life bar to &6{player}"
+  player-successfully: "&ePlayer &6{name}&e has filled your food bar!"
+
+clear-inventory-message:
+  clear-inventory: "&eYou have cleared your inventory"
+  clear-inventory-other: "&eYou have cleared inventory a &6{name}"
+  clear-inventory-player: "&6{player} &ehas cleared your inventory"
+
+tpall-message:
+  players: "&eAll players have been trained to &6{player}&e!"
+  tpall: "&eTeped all the players towards you."
+
+tp-message:
+  tp-message: "&eYou have teped the player."
+  tphere-message: "&eTeped the player towards you."

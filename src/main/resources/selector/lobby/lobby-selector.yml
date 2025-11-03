@@ -3,7 +3,9 @@ menu:
   rows: 3
   modern: false
   decorations:
-    0-8;9;17;18-26:
+    # Use "*" to auto-fill all available slots (except those occupied by lobbies)
+    # Or you can specify slots manually like: "0-8;9;17;18-26:"
+    "*":
       head: ""
       name: "&7 "
       lore: {}

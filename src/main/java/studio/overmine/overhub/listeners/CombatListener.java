@@ -11,10 +11,15 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
- 
+import org.bukkit.Location;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import studio.overmine.overhub.OverHub;
 import studio.overmine.overhub.controllers.CombatController;
+import studio.overmine.overhub.controllers.HotbarController;
+import studio.overmine.overhub.controllers.SpawnController;
 import studio.overmine.overhub.controllers.UserController;
 import studio.overmine.overhub.models.combat.CombatPlayer;
 import studio.overmine.overhub.models.combat.CombatStatus;
@@ -148,7 +153,6 @@ public class CombatListener implements Listener {
 
         if (!combatPlayer.isCombatTaskRunning()) {
             combatPlayer.startCombatTask(plugin, combatController);
-            // Silent start to avoid double messaging on exit
         }
     }
 
@@ -191,10 +195,18 @@ public class CombatListener implements Listener {
 
     @EventHandler
     public void onCombatQuit(PlayerQuitEvent event) {
-        CombatPlayer combatPlayer = combatController.getCombatPlayer(event.getPlayer());
-        if (combatPlayer == null) return;
+        Player player = event.getPlayer();
+        CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+        if (combatPlayer != null) {
+            combatController.removeCombatPlayer(player);
+        }
 
-        combatController.removeCombatPlayer(event.getPlayer());
+        User user = userController.getUser(player.getUniqueId());
+        if (user != null && user.isPvpEnabled()) {
+            user.setPvpEnabled(false);
+            user.setPvpState(PvpState.INACTIVE);
+            userController.saveUser(user);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -214,23 +226,80 @@ public class CombatListener implements Listener {
         }
 
         Player killer = victim.getKiller();
-        if (killer == null || !victimInPvp) {
-            return;
+        if (killer != null && victimInPvp) {
+            CombatPlayer killerCombatPlayer = combatController.getCombatPlayer(killer);
+            if (killerCombatPlayer != null && killerCombatPlayer.isPvP()) {
+                User killerUser = userController.getUser(killer.getUniqueId());
+                if (killerUser != null) {
+                    killerUser.incrementPvpKills();
+                    killerUser.incrementPvpKillStreak();
+                    userController.saveUser(killerUser);
+                    
+                    String killMessage = LanguageResource.COMBAT_PVP_KILL
+                            .replace("{victim}", victim.getName())
+                            .replace("{kills}", String.valueOf(killerUser.getPvpKills()))
+                            .replace("{streak}", String.valueOf(killerUser.getPvpKillStreak()));
+                    ChatUtil.sendMessage(killer, killMessage);
+                    
+                    event.setDeathMessage(null);
+                }
+            }
         }
-
-        CombatPlayer killerCombatPlayer = combatController.getCombatPlayer(killer);
-        if (killerCombatPlayer == null || !killerCombatPlayer.isPvP()) {
-            return;
+        
+        if (victimInPvp && killer != null) {
+            String deathMessage = LanguageResource.COMBAT_PVP_DEATH
+                    .replace("{killer}", killer.getName());
+            ChatUtil.sendMessage(victim, deathMessage);
         }
+        
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (victim.isOnline()) {
+                    victim.spigot().respawn();
+                }
+            }
+        }.runTask(plugin);
+    }
 
-        User killerUser = userController.getUser(killer.getUniqueId());
-        if (killerUser == null) {
-            return;
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        User user = userController.getUser(player.getUniqueId());
+        
+        if (user != null && user.isPvpEnabled()) {
+            CombatPlayer combatPlayer = combatController.getCombatPlayer(player);
+            if (combatPlayer == null || !combatPlayer.isPvP()) {
+                user.setPvpEnabled(false);
+                user.setPvpState(PvpState.INACTIVE);
+                userController.saveUser(user);
+                return;
+            }
+            
+            SpawnController spawnController = plugin.getSpawnController();
+            if (spawnController != null) {
+                Location combatSpawn = spawnController.getCombatSpawn(player);
+                if (combatSpawn != null) {
+                    event.setRespawnLocation(combatSpawn);
+                    
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (player.isOnline()) {
+                                player.setVelocity(new Vector(0, 0, 0));
+                                player.setFallDistance(0);
+                                player.setNoDamageTicks(40);
+                                
+                                HotbarController hotbarController = plugin.getHotbarController();
+                                if (hotbarController != null) {
+                                    hotbarController.resetPvpInventory(player);
+                                }
+                            }
+                        }
+                    }.runTask(plugin);
+                }
+            }
         }
-
-        killerUser.incrementPvpKills();
-        killerUser.incrementPvpKillStreak();
-        userController.saveUser(killerUser);
     }
 
     private void recordLastHit(Player victim, Player damager) {

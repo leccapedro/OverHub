@@ -94,12 +94,18 @@ public class PvpPlaceholderExpansion extends PlaceholderExpansion {
 
     private String formatCombatTime(int seconds) {
         if (seconds <= 0) {
-            return "00:00";
+            return ScoreboardResource.SCOREBOARD_PVP_COMBAT_TIME_COLOR + "00:00";
         }
 
         int minutes = seconds / 60;
         int remainder = seconds % 60;
-        return String.format(Locale.ROOT, "%02d:%02d", minutes, remainder);
+        String color = ScoreboardResource.SCOREBOARD_PVP_COMBAT_TIME_COLOR;
+        
+        if (minutes == 0) {
+            return color + remainder + "s";
+        }
+        
+        return color + String.format(Locale.ROOT, "%02d:%02d", minutes, remainder);
     }
 
     private boolean isPvpEnabled(@Nullable User user, @Nullable CombatPlayer combatPlayer) {

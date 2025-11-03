@@ -2,7 +2,9 @@ menu:
   title: "%server% Server Selector"
   rows: 3
   decorations:
-    0-8;9;17;18-26:
+    # Use "*" to auto-fill all available slots (except those occupied by sub-servers)
+    # Or you can specify slots manually like: "0-8;9;17;18-26:"
+    "*":
       head: ""
       name: "&7 "
       lore: {}

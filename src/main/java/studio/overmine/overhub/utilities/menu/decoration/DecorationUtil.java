@@ -89,6 +89,28 @@ public class DecorationUtil {
         }
     }
 
+    public void registerDecorations(ConfigurationSection section, Set<Decoration> decorations, int menuRows, Set<Integer> occupiedSlots) {
+        if (section == null) return;
+
+        if (section.contains("*")) {
+            ConfigurationSection autoFillSection = section.getConfigurationSection("*");
+            if (autoFillSection != null) {
+                int totalSlots = menuRows * 9;
+                for (int slot = 0; slot < totalSlots; slot++) {
+                    if (!occupiedSlots.contains(slot)) {
+                        DecorationUtil.buildDecoration(decorations, section, "*", slot);
+                    }
+                }
+            }
+        }
+
+        DecorationUtil.processDecorationKeys(section, (key, slot) -> {
+            if (!key.equals("*")) {
+                DecorationUtil.buildDecoration(decorations, section, key, slot);
+            }
+        });
+    }
+
     public void buildDecoration(
             Set<Decoration> decorations,
             ConfigurationSection section,

@@ -52,11 +52,19 @@ public class ServerSelector {
         this.menuRows = subServerFile.getInt("menu.rows");
         this.menuDecorations = new HashSet<>();
 
-        ConfigurationSection serverSelectorDecorationSection = subServerFile.getConfiguration().getConfigurationSection("menu.decorations");
-        DecorationUtil.registerDecorations(serverSelectorDecorationSection, menuDecorations);
-
         ConfigurationSection subServersSection = subServerFile.getConfiguration().getConfigurationSection("sub-servers");
         if (subServersSection == null) throw new NullPointerException("Server '" + name + "' sub-servers section is null");
+
+        Set<Integer> subServerOccupiedSlots = new HashSet<>();
+        for (String subServerName : subServersSection.getKeys(false)) {
+            ConfigurationSection subServerSection = subServersSection.getConfigurationSection(subServerName);
+            if (subServerSection != null && subServerSection.contains("item.slot")) {
+                subServerOccupiedSlots.add(subServerSection.getInt("item.slot"));
+            }
+        }
+
+        ConfigurationSection serverSelectorDecorationSection = subServerFile.getConfiguration().getConfigurationSection("menu.decorations");
+        DecorationUtil.registerDecorations(serverSelectorDecorationSection, menuDecorations, this.menuRows, subServerOccupiedSlots);
 
         for (String subServerName : subServersSection.getKeys(false)) {
             ConfigurationSection subServerSection = subServersSection.getConfigurationSection(subServerName);
